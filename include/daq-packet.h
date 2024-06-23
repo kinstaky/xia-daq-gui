@@ -2,6 +2,8 @@
 #define __DAQ_PACKET_H__
 
 constexpr size_t PACKET_SIZE = 32768; // 128kB
+// constexpr size_t PACKET_SIZE = 4096; // 16kB
+
 
 struct DaqPacket {
 	unsigned int data[PACKET_SIZE];

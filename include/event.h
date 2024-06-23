@@ -6,8 +6,6 @@ struct NotMapEvent {
 	unsigned short slot;
 	unsigned short channel;
 	unsigned int energy;
-	unsigned int cfdft;
-	unsigned int cfd;
 	double time;
 };
 

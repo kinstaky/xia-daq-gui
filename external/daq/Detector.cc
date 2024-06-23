@@ -39,7 +39,7 @@ Detector::Detector(int mode)
 
 	for(int i = 0; i < PRESET_MAX_MODULES; i++) {
 		fsave[i] = NULL;
-		// buffer_top_[i] = 0;
+		buffer_top_[i] = 0;
 		FILESIZE[i] = 0;
 		user_payload_[i] = nullptr;
 		header_[i] = nullptr;
@@ -639,6 +639,25 @@ void AllocatePayload(
 }
 
 
+void CopyBuffer(
+	unsigned int *buffer,
+	PacketHeader *header,
+	DaqPacket *packet,
+	size_t copy_words,
+	size_t &packet_unread_words,
+	size_t &packet_read_position
+) {
+	memcpy(
+		(void*)(packet->data + header->length),
+		(void*)(buffer + packet_read_position),
+		copy_words*sizeof(unsigned int)
+	);
+	header->length += copy_words;
+	packet_unread_words -= copy_words;
+	packet_read_position += copy_words;
+}
+
+
 int Detector::ReadDataFromModules(int thres,unsigned short  endofrun) {
 	// when events' number exceeds thres, data will be read out from FIFO
 	if(endofrun == 0) {
@@ -658,102 +677,168 @@ int Detector::ReadDataFromModules(int thres,unsigned short  endofrun) {
 	// words in FIFO
 	unsigned int nwords[PRESET_MAX_MODULES];
 
-	// for (unsigned short i = 0; i < NumModules; ++i) {
-	// 	// check result
-	// 	int check_result = Pixie16CheckExternalFIFOStatus(nwords+i, i);
-	// 	if (check_result < 0) {
-	// 		ErrorInfo("Detector.cc", "ReadDataFromModules(...)", "Pixie16CheckExternalFIFOStatus", retval);
-	// 		std::cout << "Invalid modnum!\n";
-	// 		return 0;
-	// 	}
-
-	// 	// read group if reach the packet threshold
-	// 	if (nwords[i] + packet_size_[i] > PACKET_SIZE - EXTFIFO_READ_THRESH) {
-	// 		group_read_[group_index_[i]] = true;
-	// 	}
-	// }
-
-	// for (unsigned short i = 0; i < NumModules; ++i) {
-	// 	if (group_read_[group_index_[i]]) {
-
-	// 	} else if (nwords[i] > (unsigned int)thres) {
-	// 		if (nwords[i] + buffer_top_[i] > BUFFER_LENGTH) {
-	// 			size_t read_words = buffer_top_[i] - packet_read_position_[i];
-	// 			memcpy(
-	// 				packet_[i]->data + header_[i]->length,
-	// 				buffer_[i] + packet_read_position_[i],
-	// 				read_words
-	// 			);
-	// 			header_[i]->length += read_words;
-	// 			SavetoFile(i);
-	// 		}
-	// 		int read_result = Pixie16ReadDataFromExternalFIFO(
-	// 			buffer_[i] + buffer_top_[i],
-	// 			nwords[i],
-	// 			i
-	// 		);
-	// 		buffer_top_[i] += nwords[i];
-	// 	}
-
-
-	// }
-
-
-
-	// group policy with second level cache sync
-	// check readable words
 	for (unsigned short i = 0; i < NumModules; ++i) {
-		// unsigned int nwords;
+		// check result
 		int check_result = Pixie16CheckExternalFIFOStatus(nwords+i, i);
 		if (check_result < 0) {
 			ErrorInfo("Detector.cc", "ReadDataFromModules(...)", "Pixie16CheckExternalFIFOStatus", check_result);
 			std::cout << "Invalid modnum!\n";
 			return 0;
 		}
-		if (nwords[i] < (unsigned int)thres) continue;
-
+		// allocate payload
 		if (!user_payload_[i]) {
 			AllocatePayload(
 				publishers_[i], user_payload_+i, header_+i, packet_+i
 			);
-			if (!user_payload_[i]) continue;
 		}
 
-		if (header_[i]->length + nwords[i] >= PACKET_SIZE) {
+		// read group if reach the packet threshold
+		size_t read_words = user_payload_[i] ? header_[i]->length : 0;
+		if (
+			nwords[i] + read_words + packet_unread_words_[i]
+				> PACKET_SIZE - EXTFIFO_READ_THRESH
+		) {
 			group_read_[group_index_[i]] = true;
 		}
 	}
 
-	// write to file and publish
 	for (unsigned short i = 0; i < NumModules; ++i) {
-		if (group_read_[group_index_[i]] && user_payload_[i]) {
-			SavetoFile(i);
-
-			// config header
-			header_[i]->id = packet_id_[i];
-			++packet_id_[i];
-			iox_pub_publish_chunk(publishers_[i], user_payload_[i]);
-
-			// allocate new shared memory
-			AllocatePayload(
-				publishers_[i], user_payload_+i, header_+i, packet_+i
-			);
+		if (group_read_[group_index_[i]] || nwords[i] > (unsigned int)thres) {
+			// buffer is full
+			if (nwords[i] + buffer_top_[i] > BUFFER_LENGTH) {
+				if (user_payload_[i]) {
+					// get copy words
+					size_t copy_words = packet_unread_words_[i];
+					// get packet tail
+					packet_tail_[i] = packet_unread_words_[i] % 4;
+					// align in 4 words
+					copy_words -= packet_tail_[i];
+					// copy to shared memory
+					memcpy(
+						(void*)(packet_[i]->data + header_[i]->length),
+						(void*)(buffer_[i] + packet_read_position_[i]),
+						copy_words*sizeof(unsigned int)
+					);
+					header_[i]->length += copy_words;
+if (header_[i]->length > PACKET_SIZE) std::cout << "Packet " << packet_id_[group_index_[i]] << " over size, " << i << ", " << header_[i]->length << "\n";
+if (packet_read_position_[i]+copy_words > buffer_top_[i]) std::cout << "Copy over buffer top, " << i << ", "
+	<< "read position " << packet_read_position_[i] << ", copy words " << copy_words
+	<< ", buffer top " << buffer_top_[i] << ", packet id " << packet_id_[group_index_[i]] << "\n";
+					packet_tail_[i] = (4 - packet_tail_[i]) % 4;
+					packet_read_position_[i] = packet_tail_[i];
+					packet_unread_words_[i] = 0;
+				}
+				SavetoFile(i);
+			}
+			if (nwords[i] > 0) {
+				int read_result = Pixie16ReadDataFromExternalFIFO(
+					buffer_[i] + buffer_top_[i],
+					nwords[i],
+					i
+				);
+				if (read_result < 0) {
+					ErrorInfo("Detector.cc", "ReadDataFromModules(...)", "Pixie16ReadDataFromExternalFIFO", read_result);
+					std::cout<<"CheckExternalFIFOWords: " << i << ", " << nwords[i] << std::endl;
+				}
+				buffer_top_[i] += nwords[i];
+				packet_unread_words_[i] += nwords[i];
+			}
 		}
-
-		if (!user_payload_[i]) continue;
-
-		if (nwords[i] < (unsigned int)thres) continue;
-		int read_result = Pixie16ReadDataFromExternalFIFO(
-			packet_[i]->data + header_[i]->length,
-			nwords[i],
-			i
-		);
-		if(read_result < 0){
-			ErrorInfo("Detector.cc", "ReadDataFromModules(...)", "Pixie16ReadDataFromExternalFIFO", read_result);
-			std::cout<<"CheckExternalFIFOWords: " << i << ", " << nwords[i] << std::endl;
+		if (group_read_[group_index_[i]]) {
+			// copy to payload and publish
+			if (user_payload_[i]) {
+				if (packet_tail_[i]) {
+					packet_unread_words_[i] -= packet_tail_[i];
+					packet_tail_[i] = 0;
+				}
+				size_t copy_words =
+					packet_unread_words_[i] + header_[i]->length <= PACKET_SIZE
+					? packet_unread_words_[i]
+					: PACKET_SIZE - header_[i]->length;
+				copy_words -= copy_words % 4;
+				memcpy(
+					(void*)(packet_[i]->data+header_[i]->length),
+					(void*)(buffer_[i]+packet_read_position_[i]),
+					copy_words*sizeof(unsigned int)    
+				);
+				// update variable
+				header_[i]->length += copy_words;
+if (header_[i]->length > PACKET_SIZE) std::cout << "Packet " << packet_id_[group_index_[i]] << " over size " << i << ", " << header_[i]->length << "\n";
+if (packet_read_position_[i]+copy_words > buffer_top_[i]) std::cout << "Copy over buffer top, " << i << ", "
+	<< "read position " << packet_read_position_[i] << ", copy words " << copy_words
+	<< ", buffer top " << buffer_top_[i] << ", packet id " << packet_id_[group_index_[i]] << "\n";
+				packet_read_position_[i] += copy_words;
+				packet_unread_words_[i] -= copy_words;
+				// publish
+				header_[i]->id = packet_id_[group_index_[i]];
+				iox_pub_publish_chunk(publishers_[i], user_payload_[i]);
+// std::cout << "Publish " << i << ", " << packet_id_[group_index_[i]] << "\n";
+				user_payload_[i] = nullptr;
+				header_[i] = nullptr;
+				packet_[i] = nullptr;
+			}
 		}
-		header_[i]->length += nwords[i];
 	}
+	// increase packet ID
+	for (unsigned short i = 0; i < NumModules; ++i) {
+		if (group_read_[i]) ++packet_id_[i];
+	}
+
+
+	// // group policy with second level cache sync
+	// // check readable words
+	// for (unsigned short i = 0; i < NumModules; ++i) {
+	// 	// unsigned int nwords;
+	// 	int check_result = Pixie16CheckExternalFIFOStatus(nwords+i, i);
+	// 	if (check_result < 0) {
+	// 		ErrorInfo("Detector.cc", "ReadDataFromModules(...)", "Pixie16CheckExternalFIFOStatus", check_result);
+	// 		std::cout << "Invalid modnum!\n";
+	// 		return 0;
+	// 	}
+	// 	if (nwords[i] < (unsigned int)thres) continue;
+
+	// 	if (!user_payload_[i]) {
+	// 		AllocatePayload(
+	// 			publishers_[i], user_payload_+i, header_+i, packet_+i
+	// 		);
+	// 		if (!user_payload_[i]) continue;
+	// 	}
+
+	// 	if (header_[i]->length + nwords[i] >= PACKET_SIZE) {
+	// 		group_read_[group_index_[i]] = true;
+	// 	}
+	// }
+
+	// // write to file and publish
+	// for (unsigned short i = 0; i < NumModules; ++i) {
+	// 	if (group_read_[group_index_[i]] && user_payload_[i]) {
+	// 		SavetoFile(i);
+
+	// 		// config header
+	// 		header_[i]->id = packet_id_[i];
+	// 		++packet_id_[i];
+	// 		iox_pub_publish_chunk(publishers_[i], user_payload_[i]);
+
+	// 		// allocate new shared memory
+	// 		AllocatePayload(
+	// 			publishers_[i], user_payload_+i, header_+i, packet_+i
+	// 		);
+	// 	}
+
+	// 	if (!user_payload_[i]) continue;
+
+	// 	if (nwords[i] < (unsigned int)thres) continue;
+	// 	int read_result = Pixie16ReadDataFromExternalFIFO(
+	// 		packet_[i]->data + header_[i]->length,
+	// 		nwords[i],
+	// 		i
+	// 	);
+	// 	if(read_result < 0){
+	// 		ErrorInfo("Detector.cc", "ReadDataFromModules(...)", "Pixie16ReadDataFromExternalFIFO", read_result);
+	// 		std::cout<<"CheckExternalFIFOWords: " << i << ", " << nwords[i] << std::endl;
+	// 	}
+	// 	header_[i]->length += nwords[i];
+	// }
 
 	// // no group policy
 	// for(unsigned short i = 0;i < NumModules;i++) {
@@ -892,13 +977,14 @@ int Detector::OpenSaveFile(int n,const char *FileN)
 
 	for(int i = 0; i < PRESET_MAX_MODULES; i++) {
 		FILESIZE[i] = 0;
-		// buffer_top_[i] = 0;
+		buffer_top_[i] = 0;
 		user_payload_[i] = nullptr;
 		header_[i] = nullptr;
 		packet_[i] = nullptr;
 		packet_id_[i] = 0;
-		// packet_size_[i] = 0;
-		// packet_read_position_[i] = 0;
+		packet_unread_words_[i] = 0;
+		packet_read_position_[i] = 0;
+		packet_tail_[i] = 0;
 	}
 #ifdef RECODESHA256
 			SHA256_Init(&sha256_ctx[n]);
@@ -947,21 +1033,32 @@ int Detector::SavetoFile(int nFile)
 		}
 
 		size_t n = fwrite(
-			packet_[nFile]->data, 4, header_[nFile]->length, fsave[nFile]
+			buffer_[nFile], 4, buffer_top_[nFile], fsave[nFile] 
 		);
 
-		if(n != header_[nFile]->length) {
-			std::cout<<"Not All Data has been stored!"<<std::endl;
+		if (n != buffer_top_[nFile]) {
+			std::cout << "Not all data has been stored!" << std::endl;
 		}
+		
+		FILESIZE[nFile] += buffer_top_[nFile];
+		buffer_top_[nFile] = 0; 
 
-		// buffer_[i] = 
+		// group policy with second level cache sync
+		// size_t n = fwrite(
+		// 	packet_[nFile]->data, 4, header_[nFile]->length, fsave[nFile]
+		// );
+
+		// if(n != header_[nFile]->length) {
+		// 	std::cout<<"Not All Data has been stored!"<<std::endl;
+		// }
+
+		// FILESIZE[nFile] += header_[nFile]->length;
 
 #ifdef RECODESHA256
 			SHA256_Update(&sha256_ctx[nFile], (char *)buff[nFile], 4*buffid[nFile]);
 #endif
 	}
 
-	FILESIZE[nFile] += header_[nFile]->length;
 	// std::cout<<"FILE: "<<nFile<<" SIZE: "<<FILESIZE[nFile]<<std::endl;
 
 	return 0;
@@ -969,8 +1066,7 @@ int Detector::SavetoFile(int nFile)
 
 int Detector::CloseFile() {
 	for(unsigned short i = 0;i < NumModules;i++) {
-			// if(buffid[i] > 0) SavetoFile(i);
-			// FILESIZE[i] = 0;
+		if (buffer_top_[i] > 0) SavetoFile(i);
 		if(frecord) {
 			fclose(fsave[i]);
 #ifdef RECODESHA256
@@ -1002,33 +1098,41 @@ int Detector::StopRun()
 	}
 
 	int counter = 0;
-	while(RunStatus())
-		{
-			ReadDataFromModules(0);
-			counter++;
-			if(counter > 10*NumModules) break;
-			sleep(1); // wait 1s then try again  // add 20180504
-		}
-	if(counter >= 10*NumModules)
-		{
-			std::cout<<" ERROR! Some modules may not End Run correctly!"<<std::endl;
-		}
+	while(RunStatus()) {
+		ReadDataFromModules(0);
+		counter++;
+		if(counter > 10*NumModules) break;
+		sleep(1); // wait 1s then try again  // add 20180504
+	}
+	if(counter >= 10*NumModules) {
+		std::cout<<" ERROR! Some modules may not End Run correctly!"<<std::endl;
+	}
 
 	// Make sure all data has been read out
 	ReadDataFromModules(0,1); // end of run
 	for(unsigned short i = 0;i < NumModules;i++) {
+		SavetoFile(i);
 		if (user_payload_[i]) {
-			SavetoFile(i);
-
-			// write packet ID
 			header_[i]->id = packet_id_[i];
 			iox_pub_publish_chunk(publishers_[i], user_payload_[i]);
-			++packet_id_[i];
 			user_payload_[i] = nullptr;
 			header_[i] = nullptr;
 			packet_[i] = nullptr;
 		}
 		iox_pub_deinit(publishers_[i]);
+
+		// if (user_payload_[i]) {
+		// 	SavetoFile(i);
+
+		// 	// write packet ID
+		// 	header_[i]->id = packet_id_[i];
+		// 	iox_pub_publish_chunk(publishers_[i], user_payload_[i]);
+		// 	++packet_id_[i];
+		// 	user_payload_[i] = nullptr;
+		// 	header_[i] = nullptr;
+		// 	packet_[i] = nullptr;
+		// }
+		// iox_pub_deinit(publishers_[i]);
 	}
 	CloseFile();
 

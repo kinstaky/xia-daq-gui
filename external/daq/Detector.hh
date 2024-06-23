@@ -30,7 +30,7 @@ extern "C" {
 #include "external/pixie/app/pixie16app_export.h"
 #include "include/daq-packet.h"
 
-// #define BUFFER_LENGTH 1310720// 5MB
+#define BUFFER_LENGTH 1310720// 5MB
 
 #define FIRMWARE100M12BIT
 #define FIRMWARE100M14BIT
@@ -219,19 +219,23 @@ private:
 
 
 	FILE *fsave[PRESET_MAX_MODULES];
-	// unsigned int buffer_[PRESET_MAX_MODULES][BUFFER_LENGTH];
-	// size_t buffer_top_[PRESET_MAX_MODULES];
+	unsigned int buffer_[PRESET_MAX_MODULES][BUFFER_LENGTH];
+	size_t buffer_top_[PRESET_MAX_MODULES];
 	unsigned long FILESIZE[PRESET_MAX_MODULES];
 	// shared memory with iceoryx part
+	// publisher
 	iox_pub_options_t publisher_options_;
 	iox_pub_t publishers_[PRESET_MAX_MODULES];
 	iox_pub_storage_t publisher_storage_[PRESET_MAX_MODULES];
+	// packet
 	void *user_payload_[PRESET_MAX_MODULES];
 	PacketHeader *header_[PRESET_MAX_MODULES];
 	DaqPacket *packet_[PRESET_MAX_MODULES];
+	// packet size and pointer
 	uint64_t packet_id_[PRESET_MAX_MODULES];
-	// size_t packet_size_[PRESET_MAX_MODULES];
-	// size_t packet_read_position_[PRESET_MAX_MODULES];
+	size_t packet_unread_words_[PRESET_MAX_MODULES];
+	size_t packet_read_position_[PRESET_MAX_MODULES];
+	size_t packet_tail_[PRESET_MAX_MODULES];
 	// group policy
 	unsigned int group_index_[PRESET_MAX_MODULES];
 	bool group_read_[PRESET_MAX_MODULES];

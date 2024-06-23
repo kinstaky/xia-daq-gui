@@ -31,16 +31,21 @@ extern "C" {
 #include "include/event.h"
 
 
+int gui_tick = 0;
 void UpdateGui(TCanvas *canvas) {
 	while (!iox::posix::hasTerminationRequested()) {
-		canvas->cd(1);
-		canvas->Update();
-		canvas->Pad()->Draw();
-		canvas->cd(2);
-		canvas->Update();
-		canvas->Pad()->Draw();
+		gui_tick++;
+		if (gui_tick == 10) {
+			canvas->cd(1);
+			canvas->Update();
+			canvas->Pad()->Draw();
+			canvas->cd(2);
+			canvas->Update();
+			canvas->Pad()->Draw();
+			gui_tick = 0;
+		}
 		gSystem->ProcessEvents();
-		std::this_thread::sleep_for(std::chrono::seconds(1));		
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));		
 	}
 }
 
@@ -48,36 +53,58 @@ void UpdateGui(TCanvas *canvas) {
 /// @brief decode single event and get information
 /// @param[in] data data buffer to read
 /// @param[inout] offset offset from the begining
+/// @param[in] rate sampling rate
 /// @param[out] event mapped event
 /// @returns timestamp of current event
 ///
-uint64_t Decode(
+int64_t Decode(
 	const unsigned int *data,
 	size_t &offset,
+	int rate,
 	NotMapEvent &event
 ) {
 	const DataHeader *header = (const DataHeader*)(data + offset);
 	// get event length and increase offset
 	int event_length = (header->data[0] >> 17) & 0x3fff;
+// if (event_length % 4 || event_length == 0) {
+// 	std::cout << "length: " << event_length << "\n";
+// 	exit(EXIT_FAILURE);
+// }
 	offset += event_length;
-	event.used = false;
 	event.slot = (unsigned short)(((header->data[0] >> 4) & 0xf) - 2);
 	event.channel = header->data[0] & 0xf;
 	event.energy = header->data[3] & 0xffff;
 	// cfd
-	bool cfd_force = (header->data[2] >> 31) != 0;
-	unsigned int cfds = (header->data[2] >> 30) & 0x1;
-	double cfd = double((header->data[2] >> 16) & 0x3fff);
-	cfd = cfd_force ? 0.0 : (cfd / 16384.0 - cfds) * 4.0;
+	double cfd = 0.0;
+	if (rate == 100) {
+		bool cfd_force = (header->data[2] >> 31) != 0;
+		if (!cfd_force) {
+			cfd = double((header->data[2] >> 16) & 0x7fff);
+			cfd = cfd / 32768.0 * 10.0;
+		}
+	} else if (rate == 250) {
+		bool cfd_force = (header->data[2] >> 31) != 0;
+		if (!cfd_force) {
+			unsigned int cfds = (header->data[2] >> 30) & 0x1;
+			cfd = double((header->data[2] >> 16) & 0x3fff);
+			cfd = (cfd / 16384.0 - cfds) * 4.0;
+		}
+	} else {
+		unsigned int cfds = (header->data[2] >> 29) & 0x7;
+		bool cfd_force = cfds == 7;
+		if (!cfd_force) {
+			cfd = double((header->data[2] >> 16) & 0x1fff);
+			cfd = (cfd / 8192.0 + cfds - 1) * 2.0;
+		}
+	}
 	// timestamp 
-	uint64_t timestamp = uint64_t(header->data[2] & 0xffff) << 32;
+	int64_t timestamp = int64_t(header->data[2] & 0xffff) << 32;
 	timestamp |= header->data[1];
 	timestamp *= 8;
 	// time
 	event.time = double(timestamp) + cfd;
 	return timestamp;
 }
-
 
 
 /// @brief convert data buffer into match map
@@ -90,12 +117,19 @@ template<typename MapEvent>
 void DecodeAndMap(
 	const unsigned int *data,
 	size_t length,
-	std::multimap<uint64_t, MapEvent> &match_map
+	std::multimap<int64_t, MapEvent> &match_map
 ) {
 	size_t offset = 0;
 	MapEvent event;
+	// int count = 0;
 	while (offset+4 < length) {
-		uint64_t timestamp = Decode(data, offset, event);
+		int64_t timestamp = Decode(data, offset, 250, event);
+		event.used = false;
+		// ++count;
+		// if (count < 10) {
+		// 	std::cout << count << ", " << event.slot << ", " << event.channel
+		// 		<< ", " << event.energy << ", " << event.time << "\n";
+		// } else return;
 		match_map.insert(std::make_pair(timestamp, event));
 	}
 }
@@ -103,8 +137,8 @@ void DecodeAndMap(
 
 template<typename MapEvent, typename FundamentalEvent>
 void Match(
-	std::multimap<uint64_t, MapEvent> &map,
-	uint64_t window,
+	std::multimap<int64_t, MapEvent> &map,
+	int64_t window,
 	void (*fill_fundamental_event)(const std::vector<MapEvent>&, FundamentalEvent&),
 	std::vector<FundamentalEvent> &fundamental
 ) {
@@ -165,45 +199,177 @@ void FillOnlineTestFundamentalEvent(
 
 
 void FillOnineTestGraph(
-	const std::vector<OnlineTestFundamentalEvent> &fundamental,
+	const OnlineTestFundamentalEvent &event,
 	TH1F *ht,
 	TH2F *h2
 ) {
-	for (const auto &event : fundamental) {
-		int slot0_index = -1;
-		int slot1_ch0_index = -1;
-		int slot1_ch1_index = -1;
-		// found index
-		for (int i = 0; i < event.num; ++i) {
-			if (event.slot[i] == 0) {
-				slot0_index = i;
-			} else if (event.slot[i] == 1 && event.channel[i] == 0) {
-				slot1_ch0_index = i;
-			} else if (event.slot[i] == 1 && event.channel[i] == 1) {
-				slot1_ch1_index = i;
-			}
+	int slot0_index = -1;
+	int slot1_ch0_index = -1;
+	int slot1_ch1_index = -1;
+	// found index
+	for (int i = 0; i < event.num; ++i) {
+		if (event.slot[i] == 0) {
+			slot0_index = i;
+		} else if (event.slot[i] == 1 && event.channel[i] == 0) {
+			slot1_ch0_index = i;
+		} else if (event.slot[i] == 1 && event.channel[i] == 1) {
+			slot1_ch1_index = i;
 		}
-		// fill
-		if (slot0_index >= 0) {
-			if (slot1_ch0_index >= 0) {
-				ht->Fill(event.time[slot0_index] - event.time[slot1_ch0_index]);
-			}
-			if (slot1_ch0_index >= 0 || slot1_ch1_index >= 0) {
-				h2->Fill(0.0, 1.0);
-			} else {
-				h2->Fill(0.0, 0.0);
-			}
-		}
+	}
+	// fill
+	if (slot0_index >= 0) {
 		if (slot1_ch0_index >= 0) {
-			if (slot0_index >= 0) h2->Fill(1.0, 1.0);
-			else h2->Fill(1.0, 0.0);
+			ht->Fill(event.time[slot0_index] - event.time[slot1_ch0_index]);
 		}
-		if (slot1_ch1_index >= 0) {
-			if (slot0_index >= 0) h2->Fill(2.0, 1.0);
-			else h2->Fill(2.0, 0.0);
+		if (slot1_ch0_index >= 0 || slot1_ch1_index >= 0) {
+			h2->Fill(0.0, 1.0);
+		} else {
+			h2->Fill(0.0, 0.0);
+		}
+	}
+	if (slot1_ch0_index >= 0) {
+		if (slot0_index >= 0) h2->Fill(1.0, 1.0);
+		else h2->Fill(1.0, 0.0);
+	}
+	if (slot1_ch1_index >= 0) {
+		if (slot0_index >= 0) h2->Fill(2.0, 1.0);
+		else h2->Fill(2.0, 0.0);
+	}
+}
+
+
+struct RawData {
+	unsigned int *data;
+	size_t length;
+};
+
+void DecodeMatchFill(
+	const RawData* raw_data,
+	const int64_t window,
+	TH1F *ht,
+	TH2F *h2
+) {
+	// raw event variables
+	// has data in raw data
+	bool has_data = true;
+	// decode offset in raw data
+	size_t offsets[2] = {0, 0};
+
+	// mapped event variables
+	// first event in each module
+	NotMapEvent first_events[2];
+	first_events[0].used = true;
+	first_events[1].used = true;
+	int64_t timestamps[2];
+
+	// fundamental event variables
+	// fundamental event
+	OnlineTestFundamentalEvent fundamental;
+	// initialize
+	fundamental.num = 0; 
+	// event number
+	int &num = fundamental.num;
+	// fundamental event reference timestamp
+	int64_t ref_timestamp;
+
+
+	// loop all raw data
+	while (has_data) {
+		// decode and map
+		if (first_events[0].used && offsets[0]+4 < raw_data[0].length) {
+			timestamps[0] = Decode(raw_data[0].data, offsets[0], 250, first_events[0]);
+			first_events[0].used = false;
+		}
+		if (first_events[1].used && offsets[1]+4 < raw_data[1].length) {
+			timestamps[1] = Decode(raw_data[1].data, offsets[1], 250, first_events[1]);
+			first_events[1].used = false;
+		}
+// std::cout << "Read event 0: used " << first_events[0].used << ", slot " << first_events[0].slot
+// 	<< ", ch " << first_events[0].channel << ", e " << first_events[0].energy
+// 	<< ", t " << first_events[0].time << ", ts " << timestamps[0] << "\n";
+// std::cout << "Read event 1: used " << first_events[1].used << ", slot " << first_events[1].slot
+// 	<< ", ch " << first_events[1].channel << ", e " << first_events[1].energy
+// 	<< ", t " << first_events[1].time << ", ts " << timestamps[1] << "\n";
+
+		// match
+		bool found_match_event = false;
+		if (num == 0) {
+			// new fundamental event, find the minimum timestamp
+			// minimum timestamp
+			int64_t min_ts = 0x7fff'ffff'ffff'ffff;
+			// minimum timestamp module
+			size_t min_ts_index = 16;
+			for (size_t i = 0; i < 2; ++i) {
+				if (first_events[i].used) continue;
+				if (timestamps[i] < min_ts) {
+					min_ts = timestamps[i];
+					min_ts_index = i;
+				}
+			}
+			if (min_ts_index == 16) {
+				std::cerr << "Error: Could not find minimum timestamp.\n";
+				break;
+			}
+
+			found_match_event = true;
+			first_events[min_ts_index].used = true;
+			ref_timestamp = timestamps[min_ts_index];
+			// fill to fundamental event
+			fundamental.slot[num] = first_events[min_ts_index].slot;
+			fundamental.channel[num] = first_events[min_ts_index].channel;
+			fundamental.energy[num] = first_events[min_ts_index].energy;
+			fundamental.time[num] = first_events[min_ts_index].time;
+			++num;
+
+// std::cout << "Fundamental, num " << num-1 << ", found " << found_match_event
+// 	<< ", min ts index " << min_ts_index << ", ref ts " << ref_timestamp
+// 	<< ", used " << first_events[min_ts_index].used << ", slot " << fundamental.slot[0]
+// 	<< ", ch " << fundamental.channel[0] << ", e " << fundamental.energy[0]
+// 	<< ", t " << fundamental.time[0] << "\n";
+
+		} else {
+			for (size_t i = 0; i < 2; ++i) {
+// std::cout << "Fundamental, num " << num-1 << ", found " << found_match_event
+// 	<< ", i " << i << ", ref ts " << ref_timestamp
+// 	<< ",  used " << first_events[i].used << "\n";
+				if (first_events[i].used) continue;
+				if (
+					timestamps[i] - ref_timestamp > -window
+					&& timestamps[i] - ref_timestamp < window
+				) {
+					found_match_event = true;
+					first_events[i].used = true;
+					if (num == 16) continue;
+					fundamental.slot[num] = first_events[i].slot;
+					fundamental.channel[num] = first_events[i].channel;
+					fundamental.energy[num] = first_events[i].energy;
+					fundamental.time[num] = first_events[i].time;
+					++num; 
+				}
+			}
+		}
+
+		// fill
+		if (!found_match_event) {
+			FillOnineTestGraph(fundamental, ht, h2);
+			fundamental.num = 0;
+		}
+
+		// check data
+		if (
+			offsets[0]+4 < raw_data[0].length
+			|| offsets[1]+4 < raw_data[1].length
+			|| !first_events[0].used
+			|| !first_events[1].used
+		) {
+			has_data = true;
+		} else {
+			has_data = false;
 		}
 	}
 }
+
+
 
 
 int main(int argc, char **argv) {
@@ -231,7 +397,7 @@ int main(int argc, char **argv) {
 	TCanvas* canvas = new TCanvas("c1", "Online", 0, 0, 1200, 600);
 
 	// create histogram
-	TH1F *ht = new TH1F("ht", "time difference of two channels", 1000, -100, 100);
+	TH1F *ht = new TH1F("ht", "time difference of two channels", 1000, -50'000, 50'000);
 	TH2F *h2 = new TH2F("h2", "correlated counts", 4, 0, 4, 2, 0, 2);
 	canvas->Divide(2, 1);
 	canvas->cd(1);
@@ -271,6 +437,7 @@ int main(int argc, char **argv) {
 		);
 	}
 
+	// initialize
 	const void *user_payload[16];
 	const PacketHeader *header[16];
 	const DaqPacket *packet[16];
@@ -298,6 +465,8 @@ int main(int argc, char **argv) {
 	uint64_t group_expected_packet[16];
 	for (int i = 0; i < 16; ++i) group_expected_packet[i] = 0;
 
+	// auto idle_start = std::chrono::steady_clock::now();
+
     //! [receive and print data]
 	while (!iox::posix::hasTerminationRequested()) {
 		for (int i = 0; i < module_num; ++i) {
@@ -307,6 +476,7 @@ int main(int argc, char **argv) {
 			);
 			// no available chunk, continue
 			if (take_result == ChunkReceiveResult_NO_CHUNK_AVAILABLE) continue;
+
 			// take chunk error
 			if (take_result != ChunkReceiveResult_SUCCESS) {
 				std::cerr << "Warning: Take payload failed: "
@@ -322,10 +492,8 @@ int main(int argc, char **argv) {
 					iox_chunk_header_from_user_payload_const(user_payload[i])
 				)
 			);
-			
 			// check packet id
 			uint64_t &expected_id = group_expected_packet[group_index[i]];
-// std::cout << "Module " << i << ", expect " << expected_id << ", " << header[i]->id << "\n";
 
 			if (header[i]->id > expected_id) {
 				// packet id larger than expected, expected id is out dated
@@ -346,7 +514,7 @@ int main(int argc, char **argv) {
 					header[j] = nullptr;
 					packet[j] = nullptr;
 				}
-			} else if (header[i]->id < expected_id ) {
+			} else if (header[i]->id < expected_id) {
 				// packet id smaller than expected, packet is out dated, release it
 				iox_sub_release_chunk(subscriber[i], user_payload[i]);
 				user_payload[i] = nullptr;
@@ -362,11 +530,47 @@ int main(int argc, char **argv) {
 
 
 		if (group_valid_packet[0] == group_size[0]) {
-std::cout << header[0]->id << ", " << header[1]->id << "\n";
-			std::multimap<uint64_t, NotMapEvent> match_map;
-			// decode
-			DecodeAndMap(packet[0]->data, header[0]->length, match_map);
-			DecodeAndMap(packet[1]->data, header[1]->length, match_map);
+std::cout << "id: " << header[0]->id << ", " << header[1]->id << "\n";
+
+			// auto idle_stop = std::chrono::steady_clock::now();
+			// std::cout << "Idle time "
+			// 	<< std::chrono::duration_cast<std::chrono::microseconds>(idle_stop-idle_start).count() << "\n";
+
+			// auto start = std::chrono::steady_clock::now();
+
+			// quick analysis
+			RawData raw_data[2];
+			raw_data[0].data = (unsigned int*)(packet[0]->data);
+			raw_data[0].length = header[0]->length;
+			raw_data[1].data = (unsigned int*)(packet[1]->data);
+			raw_data[1].length = header[1]->length;
+			DecodeMatchFill(raw_data, 50'000, ht, h2);
+
+			// auto end = std::chrono::steady_clock::now();
+			// std::cout << "Quick analysis time "
+			// 	<< std::chrono::duration_cast<std::chrono::microseconds>(end-start).count() << " us\n";
+
+
+			// // auto start = std::chrono::steady_clock::now();
+			// // full analysis
+			// std::multimap<int64_t, NotMapEvent> match_map;
+			// // decode
+			// DecodeAndMap(packet[0]->data, header[0]->length, match_map);
+			// DecodeAndMap(packet[1]->data, header[1]->length, match_map);
+			// // fundamental events
+			// std::vector<OnlineTestFundamentalEvent> fundamental;
+			// // insert into map and match
+			// Match(match_map, 50'000, FillOnlineTestFundamentalEvent, fundamental);
+			// // print to graph or histogram
+			// for (const auto &event : fundamental) {
+			// 	FillOnineTestGraph(event, ht, h2);
+			// }
+
+			// auto end = std::chrono::steady_clock::now();
+			// std::cout << "Full analysis time "
+			// 	<< std::chrono::duration_cast<std::chrono::microseconds>(end-start).count() << " us\n";
+			// idle_start = std::chrono::steady_clock::now();
+
 			// clean
 			iox_sub_release_chunk(subscriber[0], user_payload[0]);
 			iox_sub_release_chunk(subscriber[1], user_payload[1]);
@@ -376,18 +580,6 @@ std::cout << header[0]->id << ", " << header[1]->id << "\n";
 			header[1] = nullptr;
 			packet[0] = nullptr;
 			packet[1] = nullptr;
-
-if (group_expected_packet[0] == 20) {
-	for (const auto &[key, value] : match_map) {
-		std::cout << key / 1000 << ", " << value.slot << ", " << value.channel << "\n";
-	}
-}
-			// fundamental events
-			std::vector<OnlineTestFundamentalEvent> fundamental;
-			// insert into map and match
-			Match(match_map, 1000, FillOnlineTestFundamentalEvent, fundamental);
-			// print to graph or histogram
-			FillOnineTestGraph(fundamental, ht, h2);
 
 			group_valid_packet[0] = 0;
 			++group_expected_packet[0];
