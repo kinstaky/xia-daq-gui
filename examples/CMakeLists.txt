@@ -35,7 +35,7 @@ set_target_properties(
 	POSITION_INDEPENDENT_CODE ON
 )
 ROOT_GENERATE_DICTIONARY(
-	online_example_dict ${PROJECT_SOURCE_DIR}/include/termination_handler.h
+	online_example_dict ${PROJECT_SOURCE_DIR}/include/signal_handler.h
 	MODULE online_example
 	LINKDEF ${PROJECT_SOURCE_DIR}/include/linkdef.h
 )

@@ -3,7 +3,7 @@
 
 // constexpr size_t PACKET_SIZE = 32768; // 128kB
 // constexpr size_t PACKET_SIZE = 4096; // 16kB
-constexpr size_t PACKET_SIZE = 256; // 1kB
+constexpr size_t PACKET_SIZE = 1024; // 4kB
 
 struct DaqPacket {
 	unsigned int data[PACKET_SIZE];

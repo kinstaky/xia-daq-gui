@@ -27,7 +27,7 @@ extern "C" {
 #include <TROOT.h>
 
 #include "include/daq_packet.h"
-#include "include/termination_handler.h"
+#include "include/signal_handler.h"
 #include "include/event.h"
 
 
@@ -414,20 +414,20 @@ int main(int argc, char **argv) {
 	std::thread update_gui_thread(UpdateGui, canvas);
 
 	// handle termination
-	TerminationHandler *termination_handler = new TerminationHandler;
+	SignalHandler *signal_handler = new SignalHandler;
 
 	// connect close window and terminate program
 	TRootCanvas *rc = (TRootCanvas*)canvas->GetCanvasImp();
 	rc->Connect(
 		"CloseWindow()",
-		"TerminationHandler", termination_handler, "Terminate()"
+		"SignalHandler", signal_handler, "Terminate()"
 	);
 
 	// //refresh the histogram
 	// canvas->Connect(
 	// 	"ProcessedEvent(Int_t,Int_t,Int_t,TObject*)",
 	// 	"TerminationHandler",
-	// 	termination_handler,
+	// 	signal_handler,
 	// 	"Refresh(Int_t,Int_t,Int_t,TObject*)"
 	// );
 

@@ -9,6 +9,6 @@
 // #pragma link C++ nestedclasses;
 
 // Turn on creation of dictionaries for class TerminationHandler
-#pragma link C++ class TerminationHandler;
+#pragma link C++ class SignalHandler;
 
 #endif // __CLING__

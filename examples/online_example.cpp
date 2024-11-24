@@ -16,20 +16,29 @@
 
 #include <iceoryx_hoofs/posix_wrapper/signal_watcher.hpp>
 
-#include "include/termination_handler.h"
+#include "include/signal_handler.h"
 #include "include/online_data_receiver.h"
 #include "external/cxxopts.hpp"
 #include "examples/alpha_source_dssd_global.h"
 
 // GUI fresh rate(FPS), in Hz
-int fresh_rate = 1;
+int fresh_rate = 10;
 
-void UpdateGui(TCanvas *canvas) {
+void UpdateGui(
+	TCanvas *canvas,
+	SignalHandler *handler,
+	const std::vector<TH1*> &histograms
+) {
 	while (!iox::posix::hasTerminationRequested()) {
 		for (int i = 1; i < 6; ++i) {
 			canvas->cd(i);
 			canvas->Update();
 			canvas->Pad()->Draw();
+		}
+		if (handler->ShouldRefresh()) {
+			for (size_t i = 0; i < histograms.size(); ++i) {
+				histograms[i]->Reset();
+			}
 		}
 		gSystem->ProcessEvents();
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000/fresh_rate));
@@ -148,17 +157,33 @@ int main(int argc, char **argv) {
 	canvas->cd(5);
 	hist_time_difference.Draw();
 
-	// update GUI
-	std::thread update_gui_thread(UpdateGui, canvas);
+	// histograms
+	std::vector<TH1*> histograms = {
+		&hist_strip,
+		&hist_energy,
+		&hist_energy_difference,
+        &hist_interval,
+        &hist_time_difference
+	};
 
 	// handle termination
-	TerminationHandler *termination_handler = new TerminationHandler;
+	SignalHandler *signal_handler = new SignalHandler;
+
+	// update GUI
+	std::thread update_gui_thread(UpdateGui, canvas, signal_handler, histograms);
+
 
 	// connect close window and terminate program
 	TRootCanvas *rc = (TRootCanvas*)canvas->GetCanvasImp();
 	rc->Connect(
 		"CloseWindow()",
-		"TerminationHandler", termination_handler, "Terminate()"
+		"SignalHandler", signal_handler, "Terminate()"
+	);
+	canvas->Connect(
+		"ProcessedEvent(Int_t, Int_t, Int_t, TObject*)",
+		"SignalHandler",
+		signal_handler,
+		"Refresh(Int_t, Int_t, Int_t, TObject*)"
 	);
 
 	// time of last event

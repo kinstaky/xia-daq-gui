@@ -136,17 +136,17 @@ std::vector<DecodeEvent>* OnlineDataReceiver::ReceiveEvent(
 		return nullptr;
 	}
 
-if (!has_taken_) {
-	for (int m = 0; m < 4; ++m) {
-		for (int j = 0; j < 4; ++j) {
-			std::cout
-				<< "Module " << m
-				<< "  timestamp low " << packet_[m]->data[4*j+1]
-				<< "  timestamp high " << (packet_[m]->data[4*j+2] & 0xffff)
-				<< ", cfd " << ((packet_[m]->data[4*j+2] >> 16) & 0xffff) << "\n";
-		}
-	}
-}
+// if (!has_taken_) {
+// 	for (int m = 0; m < 4; ++m) {
+// 		for (int j = 0; j < 4; ++j) {
+// 			std::cout
+// 				<< "Module " << m
+// 				<< "  timestamp low " << packet_[m]->data[4*j+1]
+// 				<< "  timestamp high " << (packet_[m]->data[4*j+2] & 0xffff)
+// 				<< ", cfd " << ((packet_[m]->data[4*j+2] >> 16) & 0xffff) << "\n";
+// 		}
+// 	}
+// }
 
 	has_taken_ = true;
 
