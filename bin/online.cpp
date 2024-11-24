@@ -26,8 +26,8 @@ extern "C" {
 #include <TSystem.h>
 #include <TROOT.h>
 
-#include "include/daq-packet.h"
-#include "include/termination-handler.h"
+#include "include/daq_packet.h"
+#include "include/termination_handler.h"
 #include "include/event.h"
 
 
@@ -45,7 +45,7 @@ void UpdateGui(TCanvas *canvas) {
 			gui_tick = 0;
 		}
 		gSystem->ProcessEvents();
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));		
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
@@ -89,7 +89,7 @@ int64_t Decode(
 			cfd = double((header->data[2] >> 16) & 0x3fff);
 			cfd = (cfd / 16384.0 - cfds) * 4.0;
 		}
-	} else {
+	} else { 					//500
 		unsigned int cfds = (header->data[2] >> 29) & 0x7;
 		bool cfd_force = cfds == 7;
 		if (!cfd_force) {
@@ -97,7 +97,7 @@ int64_t Decode(
 			cfd = (cfd / 8192.0 + cfds - 1) * 2.0;
 		}
 	}
-	// timestamp 
+	// timestamp
 	int64_t timestamp = int64_t(header->data[2] & 0xffff) << 32;
 	timestamp |= header->data[1];
 	timestamp *= 8;
@@ -266,7 +266,7 @@ void DecodeMatchFill(
 	// fundamental event
 	OnlineTestFundamentalEvent fundamental;
 	// initialize
-	fundamental.num = 0; 
+	fundamental.num = 0;
 	// event number
 	int &num = fundamental.num;
 	// fundamental event reference timestamp
@@ -276,11 +276,17 @@ void DecodeMatchFill(
 	// loop all raw data
 	while (has_data) {
 		// decode and map
-		if (first_events[0].used && offsets[0]+4 < raw_data[0].length) {
+		if (
+			first_events[0].used
+			&& offsets[0]+sizeof(DataHeader) < raw_data[0].length
+		) {
 			timestamps[0] = Decode(raw_data[0].data, offsets[0], 250, first_events[0]);
 			first_events[0].used = false;
 		}
-		if (first_events[1].used && offsets[1]+4 < raw_data[1].length) {
+		if (
+			first_events[1].used
+			&& offsets[1]+sizeof(DataHeader) < raw_data[1].length
+		) {
 			timestamps[1] = Decode(raw_data[1].data, offsets[1], 250, first_events[1]);
 			first_events[1].used = false;
 		}
@@ -290,6 +296,8 @@ void DecodeMatchFill(
 // std::cout << "Read event 1: used " << first_events[1].used << ", slot " << first_events[1].slot
 // 	<< ", ch " << first_events[1].channel << ", e " << first_events[1].energy
 // 	<< ", t " << first_events[1].time << ", ts " << timestamps[1] << "\n";
+
+		// map
 
 		// match
 		bool found_match_event = false;
@@ -344,7 +352,7 @@ void DecodeMatchFill(
 					fundamental.channel[num] = first_events[i].channel;
 					fundamental.energy[num] = first_events[i].energy;
 					fundamental.time[num] = first_events[i].time;
-					++num; 
+					++num;
 				}
 			}
 		}
@@ -368,8 +376,6 @@ void DecodeMatchFill(
 		}
 	}
 }
-
-
 
 
 int main(int argc, char **argv) {
@@ -408,14 +414,22 @@ int main(int argc, char **argv) {
 	std::thread update_gui_thread(UpdateGui, canvas);
 
 	// handle termination
-	TerminationHandler termination_handler;
+	TerminationHandler *termination_handler = new TerminationHandler;
 
 	// connect close window and terminate program
 	TRootCanvas *rc = (TRootCanvas*)canvas->GetCanvasImp();
 	rc->Connect(
 		"CloseWindow()",
-		"TerminationHandler", &termination_handler, "Terminate()"
+		"TerminationHandler", termination_handler, "Terminate()"
 	);
+
+	// //refresh the histogram
+	// canvas->Connect(
+	// 	"ProcessedEvent(Int_t,Int_t,Int_t,TObject*)",
+	// 	"TerminationHandler",
+	// 	termination_handler,
+	// 	"Refresh(Int_t,Int_t,Int_t,TObject*)"
+	// );
 
 	// subscriber options
 	iox_sub_options_t options;
@@ -462,8 +476,8 @@ int main(int argc, char **argv) {
 	int group_valid_packet[16];
 	for (int i = 0; i < 16; ++i) group_valid_packet[i] = 0;
 	// expected packet of each group
-	uint64_t group_expected_packet[16];
-	for (int i = 0; i < 16; ++i) group_expected_packet[i] = 0;
+	uint64_t group_expected_packet_id[16];
+	for (int i = 0; i < 16; ++i) group_expected_packet_id[i] = 0;
 
 	// auto idle_start = std::chrono::steady_clock::now();
 
@@ -493,7 +507,7 @@ int main(int argc, char **argv) {
 				)
 			);
 			// check packet id
-			uint64_t &expected_id = group_expected_packet[group_index[i]];
+			uint64_t &expected_id = group_expected_packet_id[group_index[i]];
 
 			if (header[i]->id > expected_id) {
 				// packet id larger than expected, expected id is out dated
@@ -582,7 +596,7 @@ std::cout << "id: " << header[0]->id << ", " << header[1]->id << "\n";
 			packet[1] = nullptr;
 
 			group_valid_packet[0] = 0;
-			++group_expected_packet[0];
+			++group_expected_packet_id[0];
 		}
     }
 

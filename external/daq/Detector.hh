@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 #include "external/pixie/app/pixie16app_export.h"
-#include "include/daq-packet.h"
+#include "include/daq_packet.h"
 
 #define BUFFER_LENGTH 1310720// 5MB
 

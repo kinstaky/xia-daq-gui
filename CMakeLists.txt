@@ -36,7 +36,7 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	set(CMAKE_CXX_STANDARD 17)
 
 	# Set default compile options
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-Wall -Wextra")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 	# Let's nicely support folders in IDE's
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -51,7 +51,7 @@ include(GNUInstallDirs)
 # find iceoryx
 find_package(iceoryx_posh CONFIG REQUIRED)
 find_package(iceoryx_hoofs CONFIG REQUIRED)
-find_package(iceoryx_binding_c REQUIRED)
+find_package(iceoryx_binding_c CONFIG REQUIRED)
 get_target_property(ICEORYX_CXX_STANDARD iceoryx_posh::iceoryx_posh CXX_STANDARD)
 include(IceoryxPackageHelper)
 include(IceoryxPlatform)
@@ -59,3 +59,4 @@ include(IceoryxPlatform)
 add_subdirectory(external)
 add_subdirectory(src)
 add_subdirectory(bin)
+add_subdirectory(examples)
