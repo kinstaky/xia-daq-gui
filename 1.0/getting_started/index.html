@@ -344,22 +344,13 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="写入获取插件信息">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
-      写数据分析的代码
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="写数据分析的代码">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      读取数据
+      组策略
     </span>
   </a>
   
@@ -367,6 +358,42 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      写数据分析的代码
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      数据格式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      编译
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      总结
+    </span>
+  </a>
   
 </li>
         
@@ -376,9 +403,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
+  <a href="#_11" class="md-nav__link">
     <span class="md-ellipsis">
       可调整参数
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      更多
     </span>
   </a>
   
@@ -675,22 +711,13 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="写入获取插件信息">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
-      写数据分析的代码
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="写数据分析的代码">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      读取数据
+      组策略
     </span>
   </a>
   
@@ -698,6 +725,42 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      写数据分析的代码
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      数据格式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      编译
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      总结
+    </span>
+  </a>
   
 </li>
         
@@ -707,9 +770,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
+  <a href="#_11" class="md-nav__link">
     <span class="md-ellipsis">
       可调整参数
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      更多
     </span>
   </a>
   
@@ -738,15 +810,176 @@
 <li>怎么在框架中写在线程序，需要写点什么</li>
 <li>该框架中有哪些可以调整的参数</li>
 </ol>
-<p>要达成什么效果？简单来说，就是要在打开程序后，弹出一个窗口，窗口内有各种持续更新的直方图或者散点图，数据来源是正在运行的获取。至于怎么写程序和框架中的参数，后续将详细描述。</p>
+<p>要达成什么效果？简单来说，就是要在打开程序后，弹出一个窗口，窗口内有各种持续更新的直方图，数据来源是正在运行的获取。至于怎么写程序和框架中的参数，后续将详细描述。</p>
 <h2 id="_3">怎么写程序</h2>
-<p>最直接的方法是复制 <code>template/online_template.cpp</code> 的模板，在此基础上写自己的在线分析程序。</p>
+<p>最直接的方法是复制 <code>template/</code> 文件夹中的模板，在此基础上写自己的在线分析程序。模板文件夹中包括了两个文件，一个是 <code>online_template.cpp</code>，即代码；另一个是 <code>CMakeLists.txt</code>文件，是编译的时候用的。</p>
+<p><strong>推荐</strong>用法是，在项目根目录中新建一个文件夹（后面假设这个文件夹叫 <code>my_online_src</code>），将 <code>template/</code> 中的两个文件都复制过去，然后再新的文件夹（<code>my_online_src</code>）中的代码基础上修改。</p>
 <h3 id="_4">确定画几个图</h3>
-<p>首先，我们要确定在线的窗口里要画几个图，每个图都画什么东西。</p>
+<ol>
+<li>确定在线的窗口里要画几个图（后面假设为 N 个），</li>
+<li>确定每个图都画什么东西</li>
+<li>修改第 28 行的 <code>graph_num</code> 变量，修改为需要画的图的数量 N。</li>
+</ol>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">graph_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+<p>接着转到第  145 行</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="c1">// create canvas</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="n">TCanvas</span><span class="o">*</span><span class="w"> </span><span class="n">canvas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TCanvas</span><span class="p">(</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="s">&quot;canvas&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Online&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">window_width</span><span class="p">,</span><span class="w"> </span><span class="n">window_height</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="p">);</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="n">TH1F</span><span class="w"> </span><span class="n">hist1</span><span class="p">;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="n">TH2F</span><span class="w"> </span><span class="n">hist2</span><span class="p">;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="c1">// create histograms</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="c1">// draw</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">Divide</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">cd</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="n">hist1</span><span class="p">.</span><span class="n">Draw</span><span class="p">();</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">cd</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="n">hist2</span><span class="p">.</span><span class="n">Draw</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>按照上面的代码</p>
+<ol>
+<li>创建 N 个直方图（TH1，TH2）</li>
+<li>用 <code>Divide</code> 函数将 <code>canvas</code> 分割成好几份</li>
+<li>用 <code>Draw</code> 和 <code>cd</code> 分别在 <code>canvas</code> 每一份中画一个图</li>
+</ol>
+<p>最后跳转到第 162 行</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">TH1</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">histograms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">hist1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">hist2</span><span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+<p>将所有的直方图的指针放到 <code>histograms</code>中，这是为了可以在键入 <strong>r</strong> 或者 <strong>F5</strong> 的时候重置图像。</p>
 <h3 id="_5">写入获取插件信息</h3>
-<h3 id="_6">写数据分析的代码</h3>
-<h4 id="_7">读取数据</h4>
-<h2 id="_8">可调整参数</h2>
+<p>跳转到 175 行，告诉在线程序一些基本的插件信息。</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">module_sampling_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">};</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">group_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+<ol>
+<li>修改模块的采样率信息，只能填 100、250、500，根据实际情况填写</li>
+<li>修改模块的组编号，这是用于读取模块数据时的同步机制，详见<a href="../memory_model/">内存模型</a>，下面也会简单阐述怎么写组编号。</li>
+</ol>
+<h4 id="_6">组策略</h4>
+<p><strong>组策略</strong>是本项目为了保障不同模块数据能够匹配的机制，而模块的组编号就是<strong>组策略</strong>的核心参数。简单来说，因为不同的模块对应的探测器计数率有很大的差异，所以有的记录的东西多有的少。记得多的内存很快就满了，并被读取到硬盘中。而记得少的，数据可能一直留在模块的内存里。时间积累下，计算机同一时间从模块读取到的数据是不匹配的，记得少的插件只有后半截数据能和记得多的插件对上。</p>
+<p>而本项目设计的组策略，保障了属于同一组模块中的匹配数据会被同时读取。而组编号是用来标记模块所属的组，同一个编号的模块就是属于同一个组。所以在设置组编号时，要把关联的模块设置为同一组。所谓关联的模块，一般来说是同属于一个探测器或者一套探测器的模块，比如说同一个 32 路的双面硅微条对应的 4 个模块，又比如说同一套 PPAC 对应的一两个模块。或者从另一个角度来说，如果在线程序中画某一个图需要至少两个模块，那么这两个模块应该属于同一组。</p>
+<p><strong>简而言之</strong>，设置模块的组编号时，把相互关联（需要在同一个图中使用的）的模块设置为同一组。</p>
+<h3 id="_7">写数据分析的代码</h3>
+<p>接着是核心部分的，数据分析相关的代码。这也是不同实验中最大的差异。从第 177 行开始就是从共享内存中读取数据并分析、画图。</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="n">OnlineDataReceiver</span><span class="w"> </span><span class="n">receiver</span><span class="p">(</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">    </span><span class="n">app_name</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">    </span><span class="s">&quot;DaqPacket&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">run</span><span class="p">,</span><span class="w"> </span><span class="n">crate</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">    </span><span class="n">module_sampling_rate</span><span class="p">,</span><span class="w"> </span><span class="n">group_index</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="p">);</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">receiver</span><span class="p">.</span><span class="n">Alive</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DecodeEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">receiver</span><span class="p">.</span><span class="n">ReceiveEvent</span><span class="p">(</span><span class="n">time_window</span><span class="p">);</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">        </span><span class="n">event</span><span class="p">;</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">        </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">receiver</span><span class="p">.</span><span class="n">ReceiveEvent</span><span class="p">(</span><span class="n">time_window</span><span class="p">)</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">        </span><span class="n">FillOnlineGraph</span><span class="p">(</span><span class="o">*</span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">hist1</span><span class="p">,</span><span class="w"> </span><span class="n">hist2</span><span class="p">);</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>第 1-5 行实例化了类 <code>OnlineDataReceiver</code>，这个类负责从共享内存中读取数据，并打包成事件。</p>
+<p>第 6 行的循环仅在用户按下 Ctrl+C 或者关闭窗口时终止。</p>
+<p>第 7 -11 行的循环，不断向 <code>OnlineDataReceiver</code> 请求打包好的事件</p>
+<p>第 12 行调用<code>FillOnlineGraph</code>，将 <code>event</code> 中的数据填到直方图中。模板中这个函数是空的，需要用户编写数据分析的内容。</p>
+<p><strong>总之，这一部分用户只需要修改 <code>FillOnlineGraph</code> 函数的定义和调用即可。</strong></p>
+<h3 id="_8">数据格式</h3>
+<p>写数据分析的代码依赖于 <code>OnlineDataReceiver</code> 给出的 <code>event</code> 的数据格式，即 <code>std::vector&lt;DecodeEvent&gt;</code>，一个<code>DecodeEvent</code>的数组。而 <code>DecodeEvent</code>的定义如下</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
+<span class="normal"><a href="#__codelineno-5-2">2</a></span>
+<span class="normal"><a href="#__codelineno-5-3">3</a></span>
+<span class="normal"><a href="#__codelineno-5-4">4</a></span>
+<span class="normal"><a href="#__codelineno-5-5">5</a></span>
+<span class="normal"><a href="#__codelineno-5-6">6</a></span>
+<span class="normal"><a href="#__codelineno-5-7">7</a></span>
+<span class="normal"><a href="#__codelineno-5-8">8</a></span>
+<span class="normal"><a href="#__codelineno-5-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">DecodeEvent</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="k">module</span><span class="p">;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">channel</span><span class="p">;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">energy</span><span class="p">;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">;</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">    </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">timestamp</span><span class="p">;</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">cfd</span><span class="p">;</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">used</span><span class="p">;</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9"></a><span class="p">};</span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>module，模块序号，即插件在机箱中的位置，从左到右从 0 开始</li>
+<li>channel，通道序号，通道在插件中的位置，从上到下从 0 开始</li>
+<li>energy，能量道址</li>
+<li>time，以这个 run 开始时刻为起点的时间，单位为 ns</li>
+<li><em>timestamp，以这个 run 开始时刻为起点的时间戳，单位为 ns</em></li>
+<li><em>cfd，对 timestamp 的时间补充</em></li>
+<li><em>used，这个事件是否被使用了，用户不需要关心</em></li>
+</ul>
+<p>其中后面 3 个斜体的变量，是我认为数据分析中大概率用不上的，不重要的量。也就是说前面 4 个变量就差不多了。</p>
+<p>另一方面，注意到 <code>OnlineDataReceiver</code> 中给出的事件是放在 <code>vector</code> 里的。放在同一个 <code>vector</code> 中的事件都是在同一个时间窗内的，或者说同一个 <code>vector</code> 中的事件的时间差都比小于一个给定的值，这个值就是时间窗的宽度。时间戳的宽度又 <code>OnlineDataReceiver::ReceiveEvent</code> 函数给定，模板中的 <code>time_window</code> 的值是 1000，表示的是 1000 ns 的时间窗，实际在线程序需要根据符合时间适当调整。</p>
+<h3 id="_9">编译</h3>
+<p>不难发现，本项目及其依赖项目都是靠 cmake 编译的，所以也要会一点点 cmake。cmake 相比于 make 需要将构建方式写到 <code>Makefile</code> 中，需要将构建和依赖写入到 <code>CMakeLists.txt</code> 中。为了方便，本项目同样提供了一份 <code>CMakeLists.txt</code> 的模板。</p>
+<p>用户需要做的是把 <code>CMakeLists.txt</code> 中的 <strong>online_template</strong> 都修改为实际的程序的名字。打个比方，如果源文件是 <code>my_online.cpp</code>，那么新的程序一般也叫做 <code>my_online</code>。那就可以把 <strong>online_template</strong> 都修改为 <strong>my_online</strong>，注意 CMakeLists.txt 的第 17 行有一个名字是 <strong>online_template_dict</strong>，同样需要修改为 <strong>my_online_dict</strong>（当然，不改可能也没问题，但还是推荐改）。</p>
+<p>另一方面，如果是按照前面推荐的操作的，那么<code>my_online.cpp</code>和 <code>CMakeLists.txt</code> 应该在同一个文件夹下（比如说<code>my_online_src</code>），并且这个文件夹是在本项目根目录下的，那还要在根目录的 <code>CMakeLists.txt</code> 中最后一行添加</p>
+<div class="language-cmake highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">my_online_src</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>这样 cmake 从根目录开始编译时，才能找到这个新的文件夹。</p>
+<p><strong>最后提示一下</strong>，编译的方法是在根目录使用<a href="../">简介</a>提到的用 4 个线程编译的命令</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--<span class="w"> </span>-j4
+</code></pre></div></td></tr></table></div>
+<p><strong>小结</strong>一下，需要做</p>
+<ol>
+<li>修改当前目录 <code>CMakeLists.txt</code> 中的所有 <strong>online_template</strong></li>
+<li>在根目录 <code>CMakeLists.txt</code> 最后添加一行代码</li>
+</ol>
+<h3 id="_10">总结</h3>
+<p>为了方便，这里再次总结需要修改和补充的代码</p>
+<ol>
+<li>复制 <code>online_template.cpp</code>和 <code>CMakeLists.txt</code></li>
+<li>修改 <code>graph_num</code></li>
+<li>修改创建直方图，把直方图画到画布的部分</li>
+<li>修改插件信息，包括采样率和组编号</li>
+<li>补充 <code>FillOnlineGraph</code> 函数，根据定义修改对应的调用参数</li>
+<li>修改 <code>time_window</code>，适配符合窗</li>
+<li>修改两个<code>CMakeLists.txt</code></li>
+</ol>
+<h2 id="_11">可调整参数</h2>
+<p>目前，模板中给出了 5 个可调节参数，放在了程序最前面（头文件后面），分别是</p>
+<ol>
+<li><code>fresh_rate</code>图像刷新率，单位为 Hz</li>
+<li><code>group_num</code> 画图的数量，单位为个</li>
+<li><code>window_width</code> 程序窗口的宽度，单位为像素</li>
+<li><code>window_height</code>程序窗口的高度，单位为像素</li>
+<li><code>time_window</code>符合窗的宽度，单位为 ns</li>
+</ol>
+<h2 id="_12">更多</h2>
+<ul>
+<li>如果想要了解模板中其他部分的含义，参考<a href="../template_walk_through/">模板详解</a></li>
+<li>如果想要参考可运行的代码，或者数据分析和在线结合的例子，请看源代码中的 <code>examples</code> 目录和<a href="../example_details/">示例详解</a></li>
+<li>如果想要了解共享内存的机制，参考开发者指南</li>
+</ul>
 
 
 

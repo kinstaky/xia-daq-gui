@@ -892,7 +892,7 @@
 <li>62 行程序结束清理</li>
 </ol>
 <p>在线程序首先读入输入参数，确定需要处理的是哪个 run 哪个机箱的数据。然后做一些 ROOT 相关的准备，准备好在线需要的直方图。用户输入的响应主要是两部分，一是按照设定的帧率刷新直方图，二是对键盘鼠标输入的响应。核心的部分是从共享内存中读取数据，然后根据用户编写的算法进行实质的在线分析，并填到直方图中。这部分也是经常做数据分析的人所擅长的。最后是清理一下程序中的东西，并优雅地结束程序。</p>
-<p>如果只是想要简单地开发基本能用的在线程序，实际上只需要关注第 4 部分数据处理相关的就足够了。下面将详细解释每一部分的工作流程。</p>
+<p><strong>如果只是想要简单地开发基本能用的在线程序，实际上只需要关注第 4 部分数据处理相关的就足够了。</strong>下面将详细解释每一部分的工作流程。</p>
 <h2 id="_3">输入参数处理</h2>
 <p>为什么需要处理输入参数（arguments）？考虑到实验的过程中，在线处理的对象是变化的，比如说 run 是变化的，所以需要指定参数来让在线程序知道应该处理哪些数据。当然，在程序设计中，目前只是考虑到了两个参数，run 序号和机箱序号。换句话说，用户可以选择在线处理特定的 run 和特定机箱的数据。所以在第 3 行和第 5 行初始化了 <code>run</code> 和 <code>crate</code> 参数，进行参数处理后会给两者对应的值。</p>
 <p>当然，这里的在线处理是实时读取共享内存内的数据的，也就是说是读取的正在运行的 run 的数据。所以虽然可以选择不同的 run 的数据，但是实验中同一时刻只有一个 run 可选，就是正在运行的 run。另一方面，实验中预设是一台电脑对应一个机箱，在线程序通过共享内存只能读取对应机箱的数据。总而言之，表面上有得选，实际上没得选。</p>
@@ -1150,6 +1150,62 @@
 <p>来等待线程结束并回收。</p>
 <p>顺便一提，如果程序中有用到 <code>new</code> 或者 <code>malloc</code> 来申请内存，也应该在这一部分释放内存。</p>
 <h2 id="cmake">用 cmake 构建</h2>
+<p>这里简单解释模板 <code>CMakeLists.txt</code>中的代码的作用。当然，推荐还是系统学习 cmake，这里推荐 <a href="https://hsf-training.github.io/hsf-training-cmake-webpage/">HSF</a> 上的教程。</p>
+<div class="language-cmake highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-9-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-9-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-9-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-9-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-9-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-9-10">10</a></span>
+<span class="normal"><a href="#__codelineno-9-11">11</a></span>
+<span class="normal"><a href="#__codelineno-9-12">12</a></span>
+<span class="normal"><a href="#__codelineno-9-13">13</a></span>
+<span class="normal"><a href="#__codelineno-9-14">14</a></span>
+<span class="normal"><a href="#__codelineno-9-15">15</a></span>
+<span class="normal"><a href="#__codelineno-9-16">16</a></span>
+<span class="normal"><a href="#__codelineno-9-17">17</a></span>
+<span class="normal"><a href="#__codelineno-9-18">18</a></span>
+<span class="normal"><a href="#__codelineno-9-19">19</a></span>
+<span class="normal"><a href="#__codelineno-9-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="nb">add_executable</span><span class="p">(</span><span class="s">online_template</span><span class="w"> </span><span class="s">online_template.cpp</span><span class="p">)</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="nb">target_include_directories</span><span class="p">(</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="w">    </span><span class="s">online_template</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="w"> </span><span class="s">ROOT_INCLUDE_DIRS</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="p">)</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="nb">target_link_libraries</span><span class="p">(</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="w">    </span><span class="s">online_template</span><span class="w"> </span><span class="s">PUBLIC</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="w">    </span><span class="s">online_data_receiver</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8"></a><span class="w">    </span><span class="s">ROOT::Graf</span><span class="w"> </span><span class="s">ROOT::Gpad</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="p">)</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10"></a><span class="nb">set_target_properties</span><span class="p">(</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11"></a><span class="w">    </span><span class="s">online_template</span><span class="w"> </span><span class="s">PROPERTIES</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12"></a><span class="w">    </span><span class="s">CXX_STANDARD_REQUIRED</span><span class="w"> </span><span class="s">ON</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13"></a><span class="w">    </span><span class="s">CXX_STANDARD</span><span class="w"> </span><span class="o">${</span><span class="nv">ICEORYX_CXX_STANDARD</span><span class="o">}</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14"></a><span class="w">    </span><span class="s">POSITION_INDEPENDENT_CODE</span><span class="w"> </span><span class="s">ON</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15"></a><span class="p">)</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16"></a><span class="nb">root_generate_dictionary</span><span class="p">(</span>
+<a id="__codelineno-9-17" name="__codelineno-9-17"></a><span class="w">    </span><span class="s">online_template_dict</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="s">/include/signal_handler.h</span>
+<a id="__codelineno-9-18" name="__codelineno-9-18"></a><span class="w">    </span><span class="s">MODULE</span><span class="w"> </span><span class="s">online_template</span>
+<a id="__codelineno-9-19" name="__codelineno-9-19"></a><span class="w">    </span><span class="s">LINKDEF</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="s">/include/linkdef.h</span>
+<a id="__codelineno-9-20" name="__codelineno-9-20"></a><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>模板中一共包含 5 个命令</p>
+<ol>
+<li><code>add_executable</code> 新增一个可执行文件，包含 2 个参数</li>
+<li>可执行文件的名字，即编译后的程序就叫 <code>online_template</code></li>
+<li>源代码文件的名字</li>
+<li><code>target_include_directories</code>，给一个目标设置包含路径。所谓的目标即 <code>add_executable</code> 或者 <code>add_library</code> 之类的命令添加的东西，这里设置的目标是<code>online_template</code>，即上一个命令所声明的。包含路径就是源码中包含的头文件的所在目录，这里指定了两个目录，一个是项目的根目录 <code>${PROJECT_SOURCE_DIR}</code>，另一个是 ROOT 的头文件目录 <code>ROOT_INCLUDE_DIR</code></li>
+<li><code>target_link_libraries</code>，给一个目标设置链接的库，这里目标设置为 <code>online_template</code>。而链接的库是 <code>online_data_receiver</code>是<a href="../getting_started/">上手指南</a>中提到 <code>OnlineDataReceiver</code> 类。另外两个链接的库是 ROOT 相关的，分别是 TH1、TH2、TGraph 相关的 <code>ROOT::Graf</code> 和 TCanvas 相关的 <code>ROOT::Gpad</code></li>
+<li><code>set_target_properties</code>，给一个目标设置一些编译参数，这里主要是依赖的 iceoryx 库要求的，实际就设置了两个参数，一个是 iceoryx 要求的 C++ 标准，另一个是需要位置无关的代码</li>
+<li><code>root_generate_dictionary</code>，这个是 ROOT 所需要的。前面提到了 <code>SignalHandler</code> 比较特殊，继承自 <code>RQ_Object</code>，所以需要用这样的方式来链接动态库。</li>
+<li><code>online_template_dict</code> 是一个新的目标，本质是代码生成， <code>SignalHandler</code>继承自 <code>RQ_Object</code> 后被添加了一些新的代码，新的代码会编译出一个动态库，库的名字就是 <code>online_template_dict</code>（这一段有一部分是我猜的）</li>
+<li><code>${PROJECT_SOURCE_DIR}/include/signal_handler.h</code> 告诉 cmake <code>SignalHandler</code> 在哪里声明和定义</li>
+<li><code>MODULE online_template</code> 告诉 cmake，把 ROOT 生成的 <code>online_template_dict</code> 链接到 <code>online_template</code> 上</li>
+<li><code>LINKDEF ${PROJECT_SOURCE_DIR}/include/linkdef.h</code> 告诉 cmake 对应的 <code>linkdef.h</code> 文件在哪，这一部分应该是和 cint 相关的，我不太了解</li>
+</ol>
+<p>实际使用时，只需要简单修改 <code>online_template</code> 即可。</p>
 
 
 
