@@ -138,7 +138,7 @@ In brief:
 
    This program is the actual online application. A ROOT window will open, displaying a real-time updating plot, as shown below:
 
-   ![Online Example](../images/online_example.png)
+   ![Online Example](https://github.com/kinstaky/xia-daq-gui-online/blob/master/docs/images/online_example.png)
 
 #### Explanation of Parameters
 

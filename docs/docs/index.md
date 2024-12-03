@@ -135,7 +135,7 @@ iox-roudi
 
 该程序是真正的在线程序，前面的都是铺垫。之后写在线程序可以参考该程序。运行后会弹出一个 ROOT 的窗口，里面出现实时刷新的图。如下图
 
-![在线示例](../images/online_example.png)
+![在线示例](https://github.com/kinstaky/xia-daq-gui-online/blob/master/docs/images/online_example.png)
 
 注意到运行该程序时需要输入一些参数，简单来说
 
