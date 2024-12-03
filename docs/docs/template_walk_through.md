@@ -1,4 +1,4 @@
-# 用户指南
+# 模板详解
 
 用户可以从项目中的[模板文件](https://github.com/kinstaky/xia-daq-gui-online/blob/master/template/online_template.cpp) `template/online_template.cpp` 开始应用本项目的框架编写在线程序。如果只是简单的开发，只需要基本的 ROOT 相关的知识，熟练使用 TH1 和 TH2 直方图，熟练使用 `Fill` 函数填充直方图就足够了。在获取方面，只需要知道每一个事件对应于一个通道，而一个通道又对应与探测器的一路即可。
 
@@ -83,7 +83,7 @@ update_gui_thread.join();
 
 在线程序首先读入输入参数，确定需要处理的是哪个 run 哪个机箱的数据。然后做一些 ROOT 相关的准备，准备好在线需要的直方图。用户输入的响应主要是两部分，一是按照设定的帧率刷新直方图，二是对键盘鼠标输入的响应。核心的部分是从共享内存中读取数据，然后根据用户编写的算法进行实质的在线分析，并填到直方图中。这部分也是经常做数据分析的人所擅长的。最后是清理一下程序中的东西，并优雅地结束程序。
 
-如果只是想要简单地开发基本能用的在线程序，实际上只需要关注第 4 部分数据处理相关的就足够了。下面将详细解释每一部分的工作流程。
+**如果只是想要简单地开发基本能用的在线程序，实际上只需要关注第 4 部分数据处理相关的就足够了。**下面将详细解释每一部分的工作流程。
 
 ## 输入参数处理
 
@@ -292,6 +292,45 @@ update_gui_thread.join();
 
 顺便一提，如果程序中有用到 `new` 或者 `malloc` 来申请内存，也应该在这一部分释放内存。
 
-
-
 ## 用 cmake 构建
+
+这里简单解释模板 `CMakeLists.txt`中的代码的作用。当然，推荐还是系统学习 cmake，这里推荐 [HSF](https://hsf-training.github.io/hsf-training-cmake-webpage/) 上的教程。
+
+```cmake
+add_executable(online_template online_template.cpp)
+target_include_directories(
+	online_template PRIVATE ${PROJECT_SOURCE_DIR} ROOT_INCLUDE_DIRS
+)
+target_link_libraries(
+	online_template PUBLIC
+	online_data_receiver
+	ROOT::Graf ROOT::Gpad
+)
+set_target_properties(
+	online_template PROPERTIES
+	CXX_STANDARD_REQUIRED ON
+	CXX_STANDARD ${ICEORYX_CXX_STANDARD}
+	POSITION_INDEPENDENT_CODE ON
+)
+root_generate_dictionary(
+	online_template_dict ${PROJECT_SOURCE_DIR}/include/signal_handler.h
+	MODULE online_template
+	LINKDEF ${PROJECT_SOURCE_DIR}/include/linkdef.h
+)
+```
+
+模板中一共包含 5 个命令
+
+1. `add_executable` 新增一个可执行文件，包含 2 个参数
+   1. 可执行文件的名字，即编译后的程序就叫 `online_template`
+   2. 源代码文件的名字
+2. `target_include_directories`，给一个目标设置包含路径。所谓的目标即 `add_executable` 或者 `add_library` 之类的命令添加的东西，这里设置的目标是`online_template`，即上一个命令所声明的。包含路径就是源码中包含的头文件的所在目录，这里指定了两个目录，一个是项目的根目录 `${PROJECT_SOURCE_DIR}`，另一个是 ROOT 的头文件目录 `ROOT_INCLUDE_DIR`
+3. `target_link_libraries`，给一个目标设置链接的库，这里目标设置为 `online_template`。而链接的库是 `online_data_receiver`是[上手指南](getting_started.md)中提到 `OnlineDataReceiver` 类。另外两个链接的库是 ROOT 相关的，分别是 TH1、TH2、TGraph 相关的 `ROOT::Graf` 和 TCanvas 相关的 `ROOT::Gpad`
+4. `set_target_properties`，给一个目标设置一些编译参数，这里主要是依赖的 iceoryx 库要求的，实际就设置了两个参数，一个是 iceoryx 要求的 C++ 标准，另一个是需要位置无关的代码
+5. `root_generate_dictionary`，这个是 ROOT 所需要的。前面提到了 `SignalHandler` 比较特殊，继承自 `RQ_Object`，所以需要用这样的方式来链接动态库。
+   1. `online_template_dict` 是一个新的目标，本质是代码生成， `SignalHandler`继承自 `RQ_Object` 后被添加了一些新的代码，新的代码会编译出一个动态库，库的名字就是 `online_template_dict`（这一段有一部分是我猜的）
+   2. `${PROJECT_SOURCE_DIR}/include/signal_handler.h` 告诉 cmake `SignalHandler` 在哪里声明和定义
+   3. `MODULE online_template` 告诉 cmake，把 ROOT 生成的 `online_template_dict` 链接到 `online_template` 上
+   4. `LINKDEF ${PROJECT_SOURCE_DIR}/include/linkdef.h` 告诉 cmake 对应的 `linkdef.h` 文件在哪，这一部分应该是和 cint 相关的，我不太了解
+
+实际使用时，只需要简单修改 `online_template` 即可。

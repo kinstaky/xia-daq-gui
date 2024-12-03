@@ -20,7 +20,7 @@
 #include "include/signal_handler.h"
 #include "include/online_data_receiver.h"
 #include "external/cxxopts.hpp"
-#include "examples/alpha_source_dssd_global.h"
+
 
 // GUI fresh rate(FPS), in Hz
 constexpr int fresh_rate = 10;
@@ -30,6 +30,8 @@ constexpr int graph_num = 2;
 int window_width = 1200;
 // window height in pixel
 int window_height = 600;
+// correlation window, in nanoseconds
+int64_t time_window = 1000;
 
 
 /// @brief update ROOT GUI with specific FPS, read keyboard and refresh histograms
@@ -175,14 +177,14 @@ int main(int argc, char **argv) {
 	std::vector<int> group_index = {0, 0, 0, 0};
 	OnlineDataReceiver receiver(
 		app_name,
-		"AppName", run, crate,
+		"DaqPacket", run, crate,
 		module_sampling_rate, group_index
 	);
 	while (receiver.Alive()) {
 		for (
-			std::vector<DecodeEvent> *event = receiver.ReceiveEvent(1000);
+			std::vector<DecodeEvent> *event = receiver.ReceiveEvent(time_window);
 			event;
-			event = receiver.ReceiveEvent(1000)
+			event = receiver.ReceiveEvent(time_window)
 		) {
 			FillOnlineGraph(*event, hist1, hist2);
 		}

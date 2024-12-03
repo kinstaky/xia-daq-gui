@@ -112,7 +112,7 @@ In brief:
 - `alpha_source_dssd_simulation` simulates measuring a \(3\alpha\) source using a \(32 \times 32\) double-sided silicon strip detector (DSSD) and simulates XIA data acquisition with continuous data output.
 - `online_example` is an example of an online program that displays test data in real time.
 
-### Running Tests
+### Running for Test
 
 1. Open a new terminal and run:
 
@@ -138,7 +138,7 @@ In brief:
 
    This program is the actual online application. A ROOT window will open, displaying a real-time updating plot, as shown below:
 
-   ![Online Example](https://github.com/kinstaky/xia-daq-gui-online/blob/master/docs/images/online_example.png)
+   ![Online Example](https://github.com/kinstaky/xia-daq-gui-online/blob/master/docs/docs/images/online_example.png)
 
 #### Explanation of Parameters
 

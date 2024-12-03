@@ -34,7 +34,7 @@ set_target_properties(
 	CXX_STANDARD ${ICEORYX_CXX_STANDARD}
 	POSITION_INDEPENDENT_CODE ON
 )
-ROOT_GENERATE_DICTIONARY(
+root_generate_dictionary(
 	online_example_dict ${PROJECT_SOURCE_DIR}/include/signal_handler.h
 	MODULE online_example
 	LINKDEF ${PROJECT_SOURCE_DIR}/include/linkdef.h

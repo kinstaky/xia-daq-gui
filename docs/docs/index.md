@@ -13,6 +13,16 @@
 
 实际除了 iceoryx 和 PLXSDK 的版本以外，cmake 和 ROOT 版本并没有硬性要求，只要能编译能跑就行。PLXSDK 即控制 XIA 硬件的采集卡的驱动，上面提供的是官方版本，也可以在 [PKUXIADAQ](https://github.com/wuhongyi/PKUXIADAQ) 中下载对应的压缩包或者使用 [XIA 提供的版本](https://github.com/xiallc/broadcom_pci_pcie_sdk)，三者是一模一样的。
 
+### iceoryx
+
+参照 iceoryx 的官方文档下载和安装 iceoryx。注意本项目中使用的版本 2.06，所以下载后，需要用 git 命令切换版本
+
+```bash
+git checkout v2.0.6
+```
+
+然后再进行文档中的编译安装步骤。
+
 ### PLXSDK
 
 下载后将 `PlxSdk` 解压到自己喜欢的目录，并将该目录设置为环境变量
@@ -135,7 +145,7 @@ iox-roudi
 
 该程序是真正的在线程序，前面的都是铺垫。之后写在线程序可以参考该程序。运行后会弹出一个 ROOT 的窗口，里面出现实时刷新的图。如下图
 
-![在线示例](https://github.com/kinstaky/xia-daq-gui-online/blob/master/docs/images/online_example.png)
+![在线示例](images/online_example.png)
 
 注意到运行该程序时需要输入一些参数，简单来说
 

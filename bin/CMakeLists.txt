@@ -16,7 +16,7 @@ set_target_properties(
 	CXX_STANDARD ${ICEORYX_CXX_STANDARD}
 	POSITION_INDEPENDENT_CODE ON
 )
-ROOT_GENERATE_DICTIONARY(
+root_generate_dictionary(
 	MainDict ${PROJECT_SOURCE_DIR}/external/daq/MainFrame.hh
 	MODULE gddaq
 	LINKDEF ${PROJECT_SOURCE_DIR}/external/daq/MainLinkdef.h

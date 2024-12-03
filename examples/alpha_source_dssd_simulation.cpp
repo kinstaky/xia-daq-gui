@@ -16,7 +16,6 @@ extern "C" {
 #endif
 
 #include "include/daq_packet.h"
-#include "external/cxxopts.hpp"
 
 #include "alpha_source_dssd_global.h"
 
@@ -123,33 +122,13 @@ int main(int argc, char **argv) {
 	}
 
 	constexpr char app_name[] = "simulate_online_example";
-	cxxopts::Options options(app_name, "Example of DAQ online simulation");
-	options.add_options()
-		("h,help", "Print this help information") // a bool parameter
-		("r,run", "run number", cxxopts::value<int>())
-		("c,crate", "crate number", cxxopts::value<int>())
-	;
 
 	// run number
-	int run = -1;
+	int run = 0;
 	// crate ID
-	int crate = -1;
+	int crate = 0;
 
-	try {
-		auto result = options.parse(argc, argv);
-		if (result.count("help")) {
-			std::cout << options.help() << std::endl;
-			return 0;
-		}
-
-		run = result["run"].as<int>();
-		crate = result["crate"].as<int>();
-	} catch (cxxopts::exceptions::exception &e) {
-		std::cerr << "[Error]: " << e.what() << "\n";
-		std::cout << options.help() << std::endl;
-		return -1;
-	}
-
+	// init run time
 	iox_runtime_init(app_name);
 
 	// create publisher with some options set
