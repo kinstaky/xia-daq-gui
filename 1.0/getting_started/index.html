@@ -273,6 +273,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    上手指南
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -282,6 +293,100 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      引入
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      怎么写程序
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="怎么写程序">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      确定画几个图
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      写入获取插件信息
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      写数据分析的代码
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="写数据分析的代码">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      读取数据
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      可调整参数
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -529,6 +634,89 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      引入
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      怎么写程序
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="怎么写程序">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      确定画几个图
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      写入获取插件信息
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      写数据分析的代码
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="写数据分析的代码">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      读取数据
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      可调整参数
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -543,6 +731,22 @@
 
 
 <h1 id="_1">上手指南</h1>
+<h2 id="_2">引入</h2>
+<p>应用本框架开始上手在线程序的编写，需要明白几点</p>
+<ol>
+<li>目标是什么，或者说在线程序要达成什么效果</li>
+<li>怎么在框架中写在线程序，需要写点什么</li>
+<li>该框架中有哪些可以调整的参数</li>
+</ol>
+<p>要达成什么效果？简单来说，就是要在打开程序后，弹出一个窗口，窗口内有各种持续更新的直方图或者散点图，数据来源是正在运行的获取。至于怎么写程序和框架中的参数，后续将详细描述。</p>
+<h2 id="_3">怎么写程序</h2>
+<p>最直接的方法是复制 <code>template/online_template.cpp</code> 的模板，在此基础上写自己的在线分析程序。</p>
+<h3 id="_4">确定画几个图</h3>
+<p>首先，我们要确定在线的窗口里要画几个图，每个图都画什么东西。</p>
+<h3 id="_5">写入获取插件信息</h3>
+<h3 id="_6">写数据分析的代码</h3>
+<h4 id="_7">读取数据</h4>
+<h2 id="_8">可调整参数</h2>
 
 
 
