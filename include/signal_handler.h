@@ -14,16 +14,21 @@ class SignalHandler {
 	RQ_OBJECT("SIGNALHandler")
 public:
 
+	/// @brief constructor
 	SignalHandler() {
 		should_refresh_ = false;
 	}
 
 
+	/// @brief stop the program
 	void Terminate() {
 		std::raise(SIGINT);
 		gApplication->Terminate();
 	}
 
+
+
+    /// @brief update refresh status
 	void Refresh(
 		int event,
 		int x,
@@ -37,6 +42,9 @@ public:
 		}
 	}
 
+	/// @brief check whether it's needed to refresh
+	/// @returns true if it's needed to refresh, false otherwise
+	///
 	bool ShouldRefresh() {
 		if (should_refresh_) {
 			should_refresh_ = false;

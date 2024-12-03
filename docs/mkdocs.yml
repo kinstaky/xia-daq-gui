@@ -1,0 +1,43 @@
+site_name: XIA online GUI
+site_url: https://kinstaky.github.io/xia-daq-gui-online
+site_author: pwl
+
+theme:
+  name: material
+  palette:
+    primary: deep purple
+  language: zh
+  features:
+    - content.code.copy
+    - navigation.expand
+
+extra:
+  version:
+    - provider: mike
+    - default: latest
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+      pygments_lang_class: true
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - 简介: index.md
+  - 用户指南:
+    - 上手指南: getting_started.md
+    - 模板详解: template_walk_through.md
+    - 示例详解: example_details.md
+  - 开发指南:
+    - 内存模型: memory_model.md
+    - 获取代码详解: daq_walk_through.md
+    - 在线接收详解: online_receiver.md
+  - 附录:
+     - 在 Ubuntu 中编译 PLX-SDK: compile_plxsdk_ubuntu.md

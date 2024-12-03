@@ -62,7 +62,7 @@ bash builddriver 9054
 popd
 ```
 
-If you encounter issues during the compilation process, refer to the documentation of [PKUXIADAQ](http://wuhongyi.cn/PKUXIADAQ/zh/INSTALL.html). For PLXSDK downloaded from the official website, if you are using Ubuntu 20.04 or 22.04 and encounter compilation errors, refer to [Compiling PLXSDK on Ubuntu](compile_plxsdk_ubuntu.md).
+If you encounter issues during the compilation process, refer to the documentation of [PKUXIADAQ](http://wuhongyi.cn/PKUXIADAQ/zh/INSTALL.html). For PLXSDK downloaded from the official website, if you are using Ubuntu 20.04 or 22.04 and encounter compilation errors, refer to [Compiling PLXSDK on Ubuntu](https://kinstaky.github.io/xia-daq-gui-online/latest/compile_plxsdk_ubuntu/).
 
 ### Download the Project
 
@@ -98,7 +98,7 @@ This project is only a framework. For actual use, it needs to be integrated with
 
 To test the online framework and software itself, refer to the example and test section below. It includes a simulation system and corresponding online program.  
 
-To apply this framework to real acquisition systems and detectors, consult the [User Guide](user_guide.md).
+To apply this framework to real acquisition systems and detectors, consult the [Getting Started](https://kinstaky.github.io/xia-daq-gui-online/latest/getting_started/).
 
 ## Examples and Testing
 
@@ -146,3 +146,7 @@ In brief:
 - `-c 0`: Specifies **crate 0**.
 
 These parameters should be adjusted based on the actual experimental setup. For this example, no changes are needed.
+
+## Documentation
+
+Full documentation is available on https://kinstaky.github.io/xia-daq-gui-online/latest/
