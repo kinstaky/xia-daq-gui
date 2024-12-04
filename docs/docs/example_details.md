@@ -39,7 +39,6 @@ DSSD 是一面 32 路的，两面就是 64 路，需要 4 个 pixie16 插件。�
 1. 复制源文件和 CMakeListst.txt，这里已经复制好了，就放在 exapmles 文件夹下，并且源文件叫 `online_example.cpp`
 2. 修改 `graph_num` 为 5，因为要画 5 个图
 3. 修改创建直方图部分，创建了 1 个二维直方图和 4 个一维直方图，然后把指针填到 `histograms` 里
-4. 修改插件信息，这里不用修改，恰巧和模板一样
 5. 补充 `FillOnlineGraph` 函数
 6. 修改 `time_window`，懒得改了，反正 1000 也能用
 7. 修改 `CMakeLists.txt`，将 online_template 换成 online_example

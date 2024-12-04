@@ -10,11 +10,6 @@
 
 ```cpp
 constexpr char app_name[] = "online_example";
-// run number
-int run = -1;
-// crate ID
-int crate = -1;
-ParseArguments(argc, argv, app_name, run, crate);
 
 
 // ROOT multi-thread preparation
@@ -22,9 +17,10 @@ ROOT::EnableThreadSafety();
 // create ROOT application
 TApplication app(app_name, &argc, argv);
 
-
 // create canvas
-TCanvas* canvas = new TCanvas("canvas", "Online", 0, 0, 1200, 600);
+TCanvas* canvas = new TCanvas(
+    "canvas", "Online", 0, 0, window_width, window_height
+);
 TH1F hist1;
 TH2F hist2;
 // create histograms
@@ -51,19 +47,12 @@ std::thread update_gui_thread(
 );
 
 
-// setup moduel information
-std::vector<int> module_sampling_rate = {100, 100, 100, 100};
-std::vector<int> group_index = {0, 0, 0, 0};
-OnlineDataReceiver receiver(
-    app_name,
-    "AppName", run, crate,
-    module_sampling_rate, group_index
-);
+OnlineDataReceiver receiver(app_name, "DaqPacket");
 while (receiver.Alive()) {
     for (
-        std::vector<DecodeEvent> *event = receiver.ReceiveEvent(1000);
+        std::vector<DecodeEvent> *event = receiver.ReceiveEvent(time_window);
         event;
-        event = receiver.ReceiveEvent(1000)
+        event = receiver.ReceiveEvent(time_window)
     ) {
         FillOnlineGraph(*event, hist1, hist2);
     }
@@ -73,64 +62,16 @@ while (receiver.Alive()) {
 update_gui_thread.join();
 ```
 
-上面的 `main()` 函数的代码，可以主要分为 5 块。
+上面的 `main()` 函数的代码，可以主要分为 4 块。
 
-1. 1-6 行的输入参数处理
-2. 9-25 行的 ROOT 相关的准备
-3. 29-40 行的用户输入响应
-4. 43-59 行的读取数据并处理
-5. 62 行程序结束清理
+1. 4-21 行的 ROOT 相关的准备
+2. 24-36 行的用户输入响应
+3. 39-48 行的读取数据并处理
+4. 51 行程序结束清理
 
 在线程序首先读入输入参数，确定需要处理的是哪个 run 哪个机箱的数据。然后做一些 ROOT 相关的准备，准备好在线需要的直方图。用户输入的响应主要是两部分，一是按照设定的帧率刷新直方图，二是对键盘鼠标输入的响应。核心的部分是从共享内存中读取数据，然后根据用户编写的算法进行实质的在线分析，并填到直方图中。这部分也是经常做数据分析的人所擅长的。最后是清理一下程序中的东西，并优雅地结束程序。
 
-**如果只是想要简单地开发基本能用的在线程序，实际上只需要关注第 4 部分数据处理相关的就足够了。**下面将详细解释每一部分的工作流程。
-
-## 输入参数处理
-
-为什么需要处理输入参数（arguments）？考虑到实验的过程中，在线处理的对象是变化的，比如说 run 是变化的，所以需要指定参数来让在线程序知道应该处理哪些数据。当然，在程序设计中，目前只是考虑到了两个参数，run 序号和机箱序号。换句话说，用户可以选择在线处理特定的 run 和特定机箱的数据。所以在第 3 行和第 5 行初始化了 `run` 和 `crate` 参数，进行参数处理后会给两者对应的值。
-
-当然，这里的在线处理是实时读取共享内存内的数据的，也就是说是读取的正在运行的 run 的数据。所以虽然可以选择不同的 run 的数据，但是实验中同一时刻只有一个 run 可选，就是正在运行的 run。另一方面，实验中预设是一台电脑对应一个机箱，在线程序通过共享内存只能读取对应机箱的数据。总而言之，表面上有得选，实际上没得选。
-
-回归正题，在程序实现中，输入参数处理依赖于函数 `ParseArguemnts()`。该函数从 `argc` 和 `argv` 读入参数信息，并读取用户设置的程序名 `app_name`，最后返回对应的 `run` 和 `crate`。
-
-```cpp
-void ParseArguments(
-	int argc,
-	char **argv,
-	const char *app_name,
-	int &run,
-	int &crate
-) {
-	cxxopts::Options options(app_name, "Example of DAQ online simulation");
-	options.add_options()
-		("h,help", "Print this help information") // a bool parameter
-		("r,run", "run number", cxxopts::value<int>())
-		("c,crate", "crate number", cxxopts::value<int>())
-	;
-	try {
-		auto result = options.parse(argc, argv);
-		if (result.count("help")) {
-			std::cout << options.help() << std::endl;
-			exit(0);
-		}
-		// get run number and crate ID
-		run = result["run"].as<int>();
-		crate = result["crate"].as<int>();
-	} catch (cxxopts::exceptions::exception &e) {
-		std::cerr << "[Error]: " << e.what() << "\n";
-		std::cout << options.help() << std::endl;
-		exit(-1);
-	}
-}
-```
-
-在处理 `argc` 和 `argv` 时，主要是调用了 [cxxopts](https://github.com/jarro2783/cxxopts)，具体用法可以参见其说明文档，这里不详细展开了。
-
-简单来说，第 10 行设置了选项 `-h`和 `--help`，第 16-19 行检查了用户是否输入了这两个帮助选项，如果是的话就会输出帮助信息并退出程序。
-
-第 11 行设置了 `-r` 和 `--run` 选项，要求后面跟着一个整数，并在 21 行读取该值并对输出参数 `run` 赋值。第 12 行和 22 行同理，只是对象变成了机箱序号。
-
-第 15 行是尝试解析用户输入的参数，解析成功才有后面的 16-22 行的读取参数。如果解析失败，就会抛出异常，并跳转到 23-26 行的异常处理，这里的处理方法是不处理，直接报错并退出。毕竟用户输入都是错的，程序也不知道应该做什么。
+**如果只是想要简单地开发基本能用的在线程序，实际上只需要关注第 3 部分数据处理相关的就足够了。**下面将详细解释每一部分的工作流程。
 
 ## ROOT 相关准备
 
@@ -141,7 +82,6 @@ void ParseArguments(
 ROOT::EnableThreadSafety();
 // create ROOT application
 TApplication app(app_name, &argc, argv);
-
 
 // create canvas
 TCanvas* canvas = new TCanvas(
@@ -162,7 +102,7 @@ hist2.Draw();
 
 第 4 行创建了 ROOT 的 TApplication，简单理解就是程序运行时的弹出的 ROOT 窗口，实质是包含窗口在内的一系列运行环境。ROOT 的包装非常全面，所以只需要创建这个类就不需要再操心了。在一般的教程中，这个类常常配合 `TApplication::Run` 函数来进入循环并处理用户响应，但由于在线程序需要在另一个循环中读取在线数据，所以只能放弃 `Run` 函数并在后面手动处理用户响应。
 
-第 8 行到 19行就是常规的创建画布并画图。虽然一般来说，都是把直方图填充完了再画图，这里只需要画空的直方图即可。这个程序的逻辑是后续读取在线数据后再填入直方图并更新画布。
+第 6 行到 18 行就是常规的创建画布并画图。虽然一般来说，都是把直方图填充完了再画图，这里只需要画空的直方图即可。这个程序的逻辑是后续读取在线数据后再填入直方图并更新画布。
 
 ## 用户输入响应
 
@@ -204,7 +144,7 @@ std::unique_ptr<SignalHandler> HandleSignal(TCanvas *canvas) {
 
 上面的代码第 3-4 行使用智能指针创建了 `SignalHandler`类的实例，智能指针的好处就是不用自己管理内存，这个指针没用时会自动释放内存。`SignalHandler` 顾名思义，就是用来处理各种输入信号的，具体细节后面再看。
 
-第 6-10 行，将窗口的关闭按钮和 `SignalHandler`的 `Terminate()` 函数关联起来，再用户点击关闭按钮同时，会调用`Terminate()`函数。该函数做两件事，第一是产生一个中断信号，类似于按 Ctrl+C；第二是告诉 ROOT 可以终止程序了。产生中断信号是为了让管理共享内存的 iceoryx 停止工作，这个会在第四部分再次提到。
+第 6-10 行，将窗口的关闭按钮和 `SignalHandler`的 `Terminate()` 函数关联起来，再用户点击关闭按钮同时，会调用`Terminate()`函数。该函数做两件事，第一是产生一个中断信号，类似于按 Ctrl+C；第二是告诉 ROOT 可以终止程序了。产生中断信号是为了让管理共享内存的 iceoryx 停止工作，这个会在第三部分再次提到。
 
 ```cpp
 void Terminate() {
@@ -282,7 +222,7 @@ void UpdateGui(
 
 ## 清理
 
-在第三部分的用户输入响应中，我们创建了一个线程 `gui_thread` 来持续地更新图像并处理用户输入，所以在程序结束时，我们也要回收这个线程的资源，不然程序结束后显示 break。虽然这个 break 只会在程序结束后产生，理论上并不会造成任何影响，但是不够优雅。所以调用
+在第二部分的用户输入响应中，我们创建了一个线程 `gui_thread` 来持续地更新图像并处理用户输入，所以在程序结束时，我们也要回收这个线程的资源，不然程序结束后显示 break。虽然这个 break 只会在程序结束后产生，理论上并不会造成任何影响，但是不够优雅。所以调用
 
 ```cpp
 update_gui_thread.join();
