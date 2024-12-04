@@ -112,7 +112,7 @@ void AllocatePayload(
 }
 
 
-int main(int argc, char **argv) {
+int main() {
 	// assert
 	if (event_rate < fps) {
 		std::cerr << "[Error] Event rate must be greater than FPS"
