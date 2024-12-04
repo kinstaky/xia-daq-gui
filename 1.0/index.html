@@ -792,10 +792,10 @@
 <li>ROOT，6.28 以上</li>
 <li><a href="https://www.broadcom.com/products/pcie-switches-retimers/software-dev-kits">PLXSDK</a>，8.23，</li>
 </ul>
-<blockquote>
-<p>[!TIP]</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>实际除了 iceoryx 和 PLXSDK 的版本以外，cmake 和 ROOT 版本并没有硬性要求，只要能编译能跑就行。PLXSDK 即控制 XIA 硬件的采集卡的驱动，上面提供的是官方版本，也可以在 <a href="https://github.com/wuhongyi/PKUXIADAQ">PKUXIADAQ</a> 中下载对应的压缩包或者使用 <a href="https://github.com/xiallc/broadcom_pci_pcie_sdk">XIA 提供的版本</a>，三者是一模一样的。</p>
-</blockquote>
+</div>
 <h3 id="iceoryx">iceoryx</h3>
 <p>参照 iceoryx 的官方文档下载和安装 iceoryx。注意本项目中使用的版本 2.06，所以下载后，需要用 git 命令切换版本</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>v2.0.6
@@ -858,10 +858,10 @@
 <a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="nb">popd</span>
 </code></pre></div></td></tr></table></div>
 <p>编译 PLXSDK 的过程遇到问题可以参考<a href="http://wuhongyi.cn/PKUXIADAQ/zh/INSTALL.html">PKUXIADAQ</a> 的文档。</p>
-<blockquote>
-<p>[!IMPORTANT]</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
 <p>如果是从官网下载的 PLXSDK，并且使用的系统是 Ubuntu 20.04 或者 22.04，编译错误时参考 <a href="compile_plxsdk_ubuntu/">Ubuntu 编译 PLXSDK</a>。</p>
-</blockquote>
+</div>
 <h3 id="_4">下载</h3>
 <p>从 github 下载</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/kinstaky/xia-daq-gui-online.git<span class="w"> </span>.
