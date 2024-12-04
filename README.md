@@ -55,7 +55,7 @@ popd
 
 ```bash
 # Navigate to the driver directory
-pushd drivers
+pushd Driver
 # Compile the driver
 bash builddriver 9054
 # Return to the previous directory
