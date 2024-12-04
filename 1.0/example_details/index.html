@@ -315,6 +315,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    示例详解
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -324,6 +335,76 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      简介
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      情景介绍
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      在线
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="在线">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      数据分析
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      模拟获取
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -529,6 +610,65 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      简介
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      情景介绍
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      在线
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="在线">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      数据分析
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      模拟获取
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -543,6 +683,145 @@
 
 
 <h1 id="_1">示例详解</h1>
+<h2 id="_2">简介</h2>
+<p>这个示例是为了</p>
+<ol>
+<li>给出完整的在线程序的用法</li>
+<li>测试项目是否安装成功</li>
+</ol>
+<p>为了满足第 1 点，示例中的在线程序也是在模板的基础上修改的。为了满足第 2 点，示例还包含了一个模拟程序，模拟真实的获取系统的运行，使得程序可以轻量化运行，避免了接入获取系统的麻烦。当然，真正的测试还是要接入探测器和获取系统。</p>
+<h2 id="_3">情景介绍</h2>
+<p>示例中模拟了用正背面都是 32 条的双面硅微条（DSSD）测量 3 <span class="arithmatex">\(\alpha\)</span> 源。由于是模拟，源的大小是无限小的一个点。DSSD 竖直摆放（硅面平行于竖直方向的向量），形状是变长为 64 mm 的正方形，DSSD 的中心点距离源 10 mm。</p>
+<p>实验室坐标系用的笛卡尔三维坐标系，原点设置在源的位置，y 的正方向是竖直向上，z 的正方向是源到 DSSD 的正中心的，x 就是正交于 y 和 z，并满足右手定则（<span class="arithmatex">\(\vec x \times \vec y = \vec z\)</span>）。</p>
+<p>DSSD 是一面 32 路的，两面就是 64 路，需要 4 个 pixie16 插件。这里假设映射如下表</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>DSSD 条</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>正面 0-15</td>
+</tr>
+<tr>
+<td>1</td>
+<td>正面 16-31</td>
+</tr>
+<tr>
+<td>2</td>
+<td>背面 0-15</td>
+</tr>
+<tr>
+<td>3</td>
+<td>背面 16-31</td>
+</tr>
+</tbody>
+</table>
+<p>在线程序的目的是画 5 个图，观测 5 个变量。</p>
+<ol>
+<li>DSSD 中触发的 pixel，用横轴为 x 方向条的序号，纵轴为 y 方向条的序号的二维直方图表示</li>
+<li>测到的能量，用横轴为能量（MeV）的一维直方图表示</li>
+<li>DSSD 正背面能量差，用横轴为能量 （MeV） 的一维直方图表示</li>
+<li>相邻事件的时间差，用横轴为时间差 （ns）的一维直方图表示</li>
+<li>DSSD 正背面的时间差，用横轴为时间差（ns）的一维直方图表示</li>
+</ol>
+<h2 id="_4">在线</h2>
+<p>我们直接按照<a href="../getting_started/">上手指南</a>的步骤来写在线程序。</p>
+<ol>
+<li>复制源文件和 CMakeListst.txt，这里已经复制好了，就放在 exapmles 文件夹下，并且源文件叫 <code>online_example.cpp</code></li>
+<li>修改 <code>graph_num</code> 为 5，因为要画 5 个图</li>
+<li>修改创建直方图部分，创建了 1 个二维直方图和 4 个一维直方图，然后把指针填到 <code>histograms</code> 里</li>
+<li>修改插件信息，这里不用修改，恰巧和模板一样</li>
+<li>补充 <code>FillOnlineGraph</code> 函数</li>
+<li>修改 <code>time_window</code>，懒得改了，反正 1000 也能用</li>
+<li>修改 <code>CMakeLists.txt</code>，将 online_template 换成 online_example</li>
+</ol>
+<h3 id="_5">数据分析</h3>
+<p>前面提到，核心部分实质就是 <code>FillOnlineGraph</code> 的数据处理部分，这里摘出来解释一下。</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">FillOnlineGraph</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DecodeEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">decode_event</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">last_time</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">    </span><span class="n">TH2F</span><span class="w"> </span><span class="o">&amp;</span><span class="n">hist_strip</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">    </span><span class="n">TH1F</span><span class="w"> </span><span class="o">&amp;</span><span class="n">hist_energy</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">    </span><span class="n">TH1F</span><span class="w"> </span><span class="o">&amp;</span><span class="n">hist_energy_difference</span><span class="p">,</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">    </span><span class="n">TH1F</span><span class="w"> </span><span class="o">&amp;</span><span class="n">hist_interval</span><span class="p">,</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">    </span><span class="n">TH1F</span><span class="w"> </span><span class="o">&amp;</span><span class="n">hist_time_difference</span><span class="p">,</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="o">&amp;</span><span class="n">current_time</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p>首先函数的定义就大幅更改了。第一个参数是 <code>OnlineDataReceiver</code> 打包好的事件。然后因为要画 5 个图，所以直接把 5 个图的引用都当作参数传入，如果有更多的图要画可以考虑用数组概括一下。最后是第二个参数和最后一个参数，用来记录当前事件的时间，并读取上一个事件的时间，方便用来画相邻事件时间间隔的那个图。</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">decode_event</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+<p>一开始就是简单粗暴的排除符合不上的事件。由于示例中的探测模型非常简单，就是一个 <span class="arithmatex">\(\alpha\)</span> 粒子打在 DSSD 上，并且认为硅的效率是 100%，也不会产生噪声和相邻条事件，所以是非常干净的数据。那么这里就可以直接排除掉不是 DSSD 两面都有相应的事件。</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span>
+<span class="normal"><a href="#__codelineno-2-13">13</a></span>
+<span class="normal"><a href="#__codelineno-2-14">14</a></span>
+<span class="normal"><a href="#__codelineno-2-15">15</a></span>
+<span class="normal"><a href="#__codelineno-2-16">16</a></span>
+<span class="normal"><a href="#__codelineno-2-17">17</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DecodeEvent</span><span class="w"> </span><span class="o">&amp;</span><span class="n">event</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">decode_event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">        </span><span class="n">front_strip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="k">module</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">16</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="n">channel</span><span class="p">;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">        </span><span class="n">front_energy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">double</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">energy</span><span class="p">);</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">        </span><span class="n">front_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="n">time</span><span class="p">;</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">cali_p0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calibration_parameters</span><span class="p">[</span><span class="n">front_strip</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">cali_p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calibration_parameters</span><span class="p">[</span><span class="n">front_strip</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">        </span><span class="n">front_energy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cali_p0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cali_p1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">front_energy</span><span class="p">;</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">        </span><span class="n">back_strip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="k">module</span><span class="mi">-2</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">16</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="n">channel</span><span class="p">;</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">        </span><span class="n">back_energy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">double</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">energy</span><span class="p">);</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="w">        </span><span class="n">back_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="n">time</span><span class="p">;</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">cali_p0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calibration_parameters</span><span class="p">[</span><span class="n">back_strip</span><span class="o">+</span><span class="mi">32</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14"></a><span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">cali_p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calibration_parameters</span><span class="p">[</span><span class="n">back_strip</span><span class="o">+</span><span class="mi">32</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15"></a><span class="w">        </span><span class="n">back_energy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cali_p0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cali_p1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">back_energy</span><span class="p">;</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>上面的代码是核心部分，干了映射、归一的活。ifelse 分支（第 2 行和第 9 行）是用来区分正背面，然后根据通道和模块确定条编号（第 3 行和第 10 行），实际就是映射。然后从 <code>event</code>中读取能量和时间信息（第 4-5 行和第 11-12 行），同样是映射的一部分。最后是归一（第 6-8 行和第 13-15 行），因为是模拟，其中的归一参数都是编的。如此，简单的 DSSD 映射和归一就完成了。</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span>
+<span class="normal"><a href="#__codelineno-3-4">4</a></span>
+<span class="normal"><a href="#__codelineno-3-5">5</a></span>
+<span class="normal"><a href="#__codelineno-3-6">6</a></span>
+<span class="normal"><a href="#__codelineno-3-7">7</a></span>
+<span class="normal"><a href="#__codelineno-3-8">8</a></span>
+<span class="normal"><a href="#__codelineno-3-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">front_strip</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">back_strip</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="n">hist_energy_difference</span><span class="p">.</span><span class="n">Fill</span><span class="p">(</span><span class="n">front_energy</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">back_energy</span><span class="p">);</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="c1">// check front-back energy correlation</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fabs</span><span class="p">(</span><span class="n">front_energy</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">back_energy</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="n">hist_strip</span><span class="p">.</span><span class="n">Fill</span><span class="p">(</span><span class="n">front_strip</span><span class="p">,</span><span class="w"> </span><span class="n">back_strip</span><span class="p">);</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="n">hist_energy</span><span class="p">.</span><span class="n">Fill</span><span class="p">(</span><span class="n">front_energy</span><span class="p">);</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="n">hist_interval</span><span class="p">.</span><span class="n">Fill</span><span class="p">(</span><span class="n">front_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">last_time</span><span class="p">);</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="n">hist_time_difference</span><span class="p">.</span><span class="n">Fill</span><span class="p">(</span><span class="n">front_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">back_time</span><span class="p">);</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="n">current_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">front_time</span><span class="p">;</span>
+</code></pre></div></td></tr></table></div>
+<p>最后一段代码主要是往图里填数据，除了第 1 行和第 4 行。第 1 行是判断映射后能不能找到正面条和背面条，如果之前的循环里没有找到的话，正面和背面条应该是初值 -1，所以这两者其中一个小于 0 时这个事件可以直接扔掉。第 4 行是正背面符合，要求正背面能量差小于 0.5 MeV 才算符合上，不然就直接扔掉。</p>
+<p>以上就是这个简单示例中的数据分析的全部内容了，因为示例中的模型十分简单，所以代码显得很短。而实际情况往往复杂得多，需要写的代码也多得多。</p>
+<h2 id="_6">模拟获取</h2>
+<p>感觉有点复杂，对于写在线程序好像也没有帮助，以后再写。</p>
 
 
 

@@ -409,10 +409,43 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="可调整参数">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      模板参数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      获取程序的组编号
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      共享内存大小
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#_12" class="md-nav__link">
+  <a href="#_15" class="md-nav__link">
     <span class="md-ellipsis">
       更多
     </span>
@@ -776,10 +809,43 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="可调整参数">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      模板参数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      获取程序的组编号
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      共享内存大小
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#_12" class="md-nav__link">
+  <a href="#_15" class="md-nav__link">
     <span class="md-ellipsis">
       更多
     </span>
@@ -966,6 +1032,11 @@
 <li>修改两个<code>CMakeLists.txt</code></li>
 </ol>
 <h2 id="_11">可调整参数</h2>
+<blockquote>
+<p>[!WARNING]</p>
+<p>必须注意这部分的内容，获取程序的组编号、共享内存大小和符合窗的宽度是<strong>必须</strong>根据实验情况调整的内容，会直接影响在线程序的正常运行。</p>
+</blockquote>
+<h3 id="_12">模板参数</h3>
 <p>目前，模板中给出了 5 个可调节参数，放在了程序最前面（头文件后面），分别是</p>
 <ol>
 <li><code>fresh_rate</code>图像刷新率，单位为 Hz</li>
@@ -974,7 +1045,21 @@
 <li><code>window_height</code>程序窗口的高度，单位为像素</li>
 <li><code>time_window</code>符合窗的宽度，单位为 ns</li>
 </ol>
-<h2 id="_12">更多</h2>
+<h3 id="_13">获取程序的组编号</h3>
+<p>获取程序和在线程序时协同工作的，<strong>组策略</strong>是两边程序的共同机制，所以在线程序设置了组编号的同时，也要在获取程序这边设置组编号。两边的组编号应该设置为一模一样。</p>
+<p>获取程序的组编号在 <code>external/daq/Detector.cc</code> 中的 <code>Detector::Detector</code> 中设置，变量名为 <code>group_index_</code></p>
+<h3 id="_14">共享内存大小</h3>
+<p>在 <code>include/daq_packet.h</code> 中可以看到一下语句。</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
+<span class="normal"><a href="#__codelineno-8-2">2</a></span>
+<span class="normal"><a href="#__codelineno-8-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1">// constexpr size_t PACKET_SIZE = 32768; // 128kB</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="c1">// constexpr size_t PACKET_SIZE = 4096; // 16kB</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="k">constexpr</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">PACKET_SIZE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span><span class="w"> </span><span class="c1">// 4kB</span>
+</code></pre></div></td></tr></table></div>
+<p>这就是用来调整共享内存的大小的参数。这里的大小，指的是单个模块一次共享的数据的大小。实际使用获取程序时，当且仅当一组内任意一个模块缓存的数据量接近 <code>PACKET_SIZE</code> 时，整一组模块的数据才会共享到内存中。简单来说，模块的计数率越高、<code>PACKET_SIZE</code> 越小，共享的频率就越高，反之则越低。</p>
+<p>共享频率越高，那么在线程序读取数据就越频繁，好处是能够更及时先是数据，坏处是占用的 CPU 和内存资源更多，共享频率特别高时有堵塞获取的风险。与之相对，共享频率太低就不能及时展现实验条件的变化。</p>
+<p>所以需要合理估算模块的数据量，已确定共享频率和共享内存大小。单个通道，在不记录波型的情况下，一个事件一般占用 16 字节。在记录波型时，波型一个采样点占用 2 个字节。可以根据这些数据估算需要的共享内存大小。</p>
+<h2 id="_15">更多</h2>
 <ul>
 <li>如果想要了解模板中其他部分的含义，参考<a href="../template_walk_through/">模板详解</a></li>
 <li>如果想要参考可运行的代码，或者数据分析和在线结合的例子，请看源代码中的 <code>examples</code> 目录和<a href="../example_details/">示例详解</a></li>
