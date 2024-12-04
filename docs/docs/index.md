@@ -11,7 +11,9 @@
 + ROOT，6.28 以上
 + [PLXSDK](https://www.broadcom.com/products/pcie-switches-retimers/software-dev-kits)，8.23，
 
-实际除了 iceoryx 和 PLXSDK 的版本以外，cmake 和 ROOT 版本并没有硬性要求，只要能编译能跑就行。PLXSDK 即控制 XIA 硬件的采集卡的驱动，上面提供的是官方版本，也可以在 [PKUXIADAQ](https://github.com/wuhongyi/PKUXIADAQ) 中下载对应的压缩包或者使用 [XIA 提供的版本](https://github.com/xiallc/broadcom_pci_pcie_sdk)，三者是一模一样的。
+> [!TIP]
+>
+> 实际除了 iceoryx 和 PLXSDK 的版本以外，cmake 和 ROOT 版本并没有硬性要求，只要能编译能跑就行。PLXSDK 即控制 XIA 硬件的采集卡的驱动，上面提供的是官方版本，也可以在 [PKUXIADAQ](https://github.com/wuhongyi/PKUXIADAQ) 中下载对应的压缩包或者使用 [XIA 提供的版本](https://github.com/xiallc/broadcom_pci_pcie_sdk)，三者是一模一样的。
 
 ### iceoryx
 
@@ -65,14 +67,18 @@ popd
 
 ```bash
 # 进入驱动目录
-pushd drivers
+pushd Driver
 # 编译
 bash builddriver 9054
 # 返回
 popd
 ```
 
-编译 PLXSDK 的过程遇到问题可以参考[PKUXIADAQ](http://wuhongyi.cn/PKUXIADAQ/zh/INSTALL.html) 的文档。如果是从官网下载的 PLXSDK，并且使用的系统是 Ubuntu 20.04 或者 22.04，编译错误时参考 [Ubuntu 编译 PLXSDK](compile_plxsdk_ubuntu.md)。
+编译 PLXSDK 的过程遇到问题可以参考[PKUXIADAQ](http://wuhongyi.cn/PKUXIADAQ/zh/INSTALL.html) 的文档。
+
+> [!IMPORTANT]
+>
+> 如果是从官网下载的 PLXSDK，并且使用的系统是 Ubuntu 20.04 或者 22.04，编译错误时参考 [Ubuntu 编译 PLXSDK](compile_plxsdk_ubuntu.md)。
 
 ### 下载
 
@@ -105,6 +111,8 @@ cmake --build build -- -j4
 ## 开始使用
 
 由于本项目只是一个框架，而且实际使用需要结合 XIA 获取使用，所以并没有实质的包含真实的获取硬件和探测器的在线程序试用。
+
+在接上获取后，可以运行 `./build/bin/gddaq`，会弹出一个和 PKUXIADAQ 一模一样的 UI，按照 PKUXIADAQ 的使用方式使用。
 
 如果仅仅测试在线框架和软件本身，可以参考下一节的示例及测试，里面包含一个模拟的获取系统和对应的在线程序。
 
