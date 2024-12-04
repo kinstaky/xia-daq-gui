@@ -207,8 +207,8 @@ int main(int argc, char **argv) {
 		// simulate DSSD detect
 		// check position
 		if (theta > dssd_max_theta) continue;
-		double x = dssd_distance * sin(theta) * cos(phi);
-		double y = dssd_distance * sin(theta) * sin(phi);
+		double x = dssd_distance * tan(theta) * cos(phi);
+		double y = dssd_distance * tan(theta) * sin(phi);
 		if (fabs(x) > 32.0 || fabs(y) > 32.0) continue;
 		// get strip
 		int x_strip = int((x + 32.0) / 2.0);
