@@ -29,11 +29,11 @@ class OnlineDataReceiver {
 public:
 	OnlineDataReceiver(
 		const char *app_name,
-		const char *service_name,
-		int run,
-		int crate,
-		const std::vector<int> &module_sampling_rate,
-		const std::vector<int> &group_index
+		const char *service_name
+		// int run,
+		// int crate,
+		// const std::vector<int> &module_sampling_rate,
+		// const std::vector<int> &group_index
 	);
 
 	std::vector<DecodeEvent>* ReceiveEvent(
@@ -70,7 +70,7 @@ private:
 	bool has_taken_;
 
 	// group index of each module
-	int group_index_[16];
+	std::vector<int> group_index_;
 	// group policy information
 	GroupPolicyInfo group_info_[16];
 

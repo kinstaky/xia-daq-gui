@@ -2,23 +2,53 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
+
+void ReadOnlineInformation(
+	int &run,
+	int &crate,
+	size_t &module_num,
+	std::vector<int> &module_sampling_rate,
+	std::vector<int> &group_index
+) {
+	module_sampling_rate.clear();
+	group_index.clear();
+	// get file name
+	std::string file_name =
+		std::string(getenv("HOME"))
+		+ "/.xia-daq-gui-online/online_information.txt";
+	// input file stream
+	std::ifstream fin(file_name);
+	fin >> run >> crate >> module_num;
+	int tmp;
+	for (size_t i = 0; i < module_num; ++i) {
+		fin >> tmp;
+		module_sampling_rate.push_back(tmp);
+	}
+	for (size_t i = 0; i < module_num; ++i) {
+		fin >> tmp;
+		group_index.push_back(tmp);
+	}
+	// close file
+	fin.close();
+}
+
 
 OnlineDataReceiver::OnlineDataReceiver(
 	const char *app_name,
-	const char *service_name,
-	int run,
-	int crate,
-	const std::vector<int> &module_sampling_rate,
-	const std::vector<int> &group_index
+	const char *service_name
 ) {
 	char name[32];
 	strcpy(name, app_name);
 	// create runtime
 	iox::runtime::PoshRuntime::initRuntime(name);
 
-	// get module information
-	module_num_ = module_sampling_rate.size();
-	sampling_rate_ = module_sampling_rate;
+	// get online information
+	int run, crate;
+	ReadOnlineInformation(
+		run, crate, module_num_,
+		sampling_rate_, group_index_
+	);
 
 	// subscriber options
 	iox_sub_options_t options;
@@ -55,14 +85,13 @@ OnlineDataReceiver::OnlineDataReceiver(
 
 
 	// intialize group information
-	for (size_t i = 0; i < module_num_; ++i) {
-		group_index_[i] = group_index[i];
+	for (size_t i = 0; i < 16; ++i) {
 		group_info_[i].size = 0;
 		group_info_[i].valid_packets = 0;
 		group_info_[i].expect_id = 0;
 	}
 	for (size_t i = 0; i < module_num_; ++i) {
-		if (group_index[i] >= 0) ++group_info_[group_index[i]].size;
+		if (group_index_[i] >= 0) ++group_info_[group_index_[i]].size;
 	}
 }
 

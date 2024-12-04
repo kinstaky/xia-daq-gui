@@ -30,6 +30,14 @@ ModuleSampingRate 2 250 250
 # The first number mean how many modules, other number means every module bits(12/14/16)
 ModuleBits 2 14 14
 
+# module group index, used in kinstaky/xia-daq-gui-online
+# The first number mean how many modules, other number means group index of each module.
+ModuleGroupIndex 2 0 0
+
+# module alignment, used in kinstaky/xia-daq-gui-online
+# The first number mean how many modules, other number means alignment words of each module.
+ModuleAlignment 2 4 4
+
 
 ## -----------------------------------------------------------------------------
 ## firmware

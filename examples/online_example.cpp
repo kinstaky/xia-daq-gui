@@ -142,7 +142,6 @@ int main(int argc, char **argv) {
 	// create ROOT application
 	TApplication app(app_name, &argc, argv);
 
-
 	// create canvas
 	TCanvas* canvas = new TCanvas("canvas", "Online", 0, 0, 1200, 600);
 	// create histograms
@@ -184,14 +183,7 @@ int main(int argc, char **argv) {
 	);
 
 
-	// setup moduel information
-	std::vector<int> module_sampling_rate = {100, 100, 100, 100};
-	std::vector<int> group_index = {0, 0, 0, 0};
-	OnlineDataReceiver receiver(
-		app_name,
-		"ExampleSimulateOnline", 0, 0,
-		module_sampling_rate, group_index
-	);
+	OnlineDataReceiver receiver(app_name, "ExampleSimulateOnline");
 	// time of last event
 	double last_time;
 	while (receiver.Alive()) {

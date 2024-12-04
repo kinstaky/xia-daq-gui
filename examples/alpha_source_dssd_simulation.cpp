@@ -1,6 +1,8 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <filesystem>
+#include <fstream>
 
 #include <TRandom3.h>
 
@@ -46,6 +48,37 @@ constexpr double dssd_time_resolution = 1.2e-9;
 
 // intrisic frame per seconds, 逻辑帧
 constexpr int fps = 100;
+
+
+/// @brief save online needed information to file
+/// @param[in] run run number
+/// @param[in] crate crate number
+/// @param[in] sampling_rate module sampling rate
+/// @param[in] group_index group index of module
+void SaveOnlineInformation(
+	const int run,
+	const int crate,
+	const std::vector<unsigned int> &sampling_rate,
+	const std::vector<unsigned int> &group_index
+) {
+	// get directory path
+	std::string path = std::string(getenv("HOME")) + "/.xia-daq-gui-online";
+	// create directory
+	std::filesystem::create_directories(path);
+	// open file
+	std::ofstream fout(path+"/online_information.txt");
+	fout << run << "\n"
+		<< crate << "\n"
+		<< sampling_rate.size() << "\n";
+    for (size_t i = 0; i < sampling_rate.size(); ++i) {
+		fout << sampling_rate[i] << " \n"[i==sampling_rate.size()-1];
+	}
+	for (size_t i = 0; i < group_index.size(); ++i) {
+		fout << group_index[i] << " \n"[i==group_index.size()-1];
+	}
+	// close file
+	fout.close();
+}
 
 
 void FillBinaryEvent(
@@ -166,6 +199,10 @@ int main() {
 			&publisher_options
 		);
 	}
+
+	std::vector<unsigned int> sampling_rate = {100, 100, 100, 100};
+	std::vector<unsigned int> group_index = {0, 0, 0, 0};
+	SaveOnlineInformation(run, crate, sampling_rate, group_index);
 
 	// accumulated interval time
 	double accumulated_interval = 0.0;

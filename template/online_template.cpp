@@ -19,7 +19,6 @@
 
 #include "include/signal_handler.h"
 #include "include/online_data_receiver.h"
-#include "external/cxxopts.hpp"
 
 
 // GUI fresh rate(FPS), in Hz
@@ -70,43 +69,10 @@ void FillOnlineGraph(
 }
 
 
-/// @brief parse arguments from command line
-/// @param[in] argc number of arguments
-/// @param[in] argv arguments
-/// @param[in] app_name name of the application
-/// @param[out] run run number
-/// @param[out] crate crate number
+/// @brief handle user input signal
+/// @param[in] canvas pointer to canvas for drawing
+/// @returns pointer to SignalHandler
 ///
-void ParseArguments(
-	int argc,
-	char **argv,
-	const char *app_name,
-	int &run,
-	int &crate
-) {
-	cxxopts::Options options(app_name, "Example of DAQ online simulation");
-	options.add_options()
-		("h,help", "Print this help information") // a bool parameter
-		("r,run", "run number", cxxopts::value<int>())
-		("c,crate", "crate number", cxxopts::value<int>())
-	;
-	try {
-		auto result = options.parse(argc, argv);
-		if (result.count("help")) {
-			std::cout << options.help() << std::endl;
-			exit(0);
-		}
-		// get run number and crate ID
-		run = result["run"].as<int>();
-		crate = result["crate"].as<int>();
-	} catch (cxxopts::exceptions::exception &e) {
-		std::cerr << "[Error]: " << e.what() << "\n";
-		std::cout << options.help() << std::endl;
-		exit(-1);
-	}
-}
-
-
 std::unique_ptr<SignalHandler> HandleSignal(TCanvas *canvas) {
 	// signal handler
 	std::unique_ptr<SignalHandler> signal_handler =
@@ -129,18 +95,12 @@ std::unique_ptr<SignalHandler> HandleSignal(TCanvas *canvas) {
 
 int main(int argc, char **argv) {
 	constexpr char app_name[] = "online_example";
-	// run number
-	int run = -1;
-	// crate ID
-	int crate = -1;
-	ParseArguments(argc, argv, app_name, run, crate);
 
 
 	// ROOT multi-thread preparation
 	ROOT::EnableThreadSafety();
 	// create ROOT application
 	TApplication app(app_name, &argc, argv);
-
 
 	// create canvas
 	TCanvas* canvas = new TCanvas(
@@ -172,14 +132,7 @@ int main(int argc, char **argv) {
 	);
 
 
-	// setup moduel information
-	std::vector<int> module_sampling_rate = {100, 100, 100, 100};
-	std::vector<int> group_index = {0, 0, 0, 0};
-	OnlineDataReceiver receiver(
-		app_name,
-		"DaqPacket", run, crate,
-		module_sampling_rate, group_index
-	);
+	OnlineDataReceiver receiver(app_name, "DaqPacket");
 	while (receiver.Alive()) {
 		for (
 			std::vector<DecodeEvent> *event = receiver.ReceiveEvent(time_window);

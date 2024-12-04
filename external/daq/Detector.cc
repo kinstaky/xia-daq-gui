@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdio>
 #include <iomanip>
+#include <filesystem>
 
 #if defined (__cplusplus)
 extern "C" {
@@ -31,11 +32,6 @@ Detector::Detector(int mode)
 , fonline(0) {
 
 	OfflineMode = (unsigned short)mode;
-
-	for (int i = 0; i < PRESET_MAX_MODULES; ++i) group_index_[i] = i;
-	group_index_[0] = 0;
-	group_index_[1] = 0;
-	
 
 	for(int i = 0; i < PRESET_MAX_MODULES; i++) {
 		fsave[i] = NULL;
@@ -91,6 +87,17 @@ bool Detector::ReadConfigFile(char *config)
 	wuReadData::ReadVector("ModuleSlot", config, moduleslot);
 	wuReadData::ReadVector("ModuleSampingRate", config, modulesamplingrate);
 	wuReadData::ReadVector("ModuleBits", config, modulebits);
+
+	wuReadData::ReadVector("ModuleGroupIndex", config, &group_index_, true);
+	wuReadData::ReadVector("ModuleAlignment", config, &module_align_, true);
+	if (group_index_.size() != modulesamplingrate->size()) {
+		std::cerr << "[Error] ModuleGroupIndex size != ModuleSamplingRate size.\n";
+		return false;
+	}
+	if (module_align_.size() != modulesamplingrate->size()) {
+		std::cerr << "[Error] ModuleAlignment size != ModuleSamplingRate size.\n";
+		return false;
+	}
 
 #ifdef FIRMWARE100M12BIT
 	File100M12bit_sys = wuReadData::ReadValue<std::string>("100M12bit_sys", config);
@@ -169,7 +176,7 @@ bool Detector::ReadConfigFile(char *config)
 
 bool Detector::BootSystem()
 {
-	ReadConfigFile();
+	if (!ReadConfigFile()) return false;
 
 	if(OfflineMode == 0)
 		{
@@ -540,6 +547,37 @@ int Detector::Syncronise()
 	return retval;
 }
 
+
+/// @brief save online needed information to file
+/// @param[in] run run number
+/// @param[in] crate crate number
+/// @param[in] sampling_rate module sampling rate
+/// @param[in] group_index group index of module
+void SaveOnlineInformation(
+	const int run,
+	const int crate,
+	const std::vector<unsigned short> &sampling_rate,
+	const std::vector<unsigned int> &group_index
+) {
+	// get directory path
+	std::string path = std::string(getenv("HOME")) + "/.xia-daq-gui-online";
+	// create directory
+	std::filesystem::create_directories(path);
+	// open file
+	std::ofstream fout(path+"/online_information.txt");
+	fout << run << "\n"
+		<< crate << "\n"
+		<< sampling_rate.size() << "\n";
+    for (size_t i = 0; i < sampling_rate.size(); ++i) {
+		fout << sampling_rate[i] << " \n"[i==sampling_rate.size()-1];
+	}
+	for (size_t i = 0; i < group_index.size(); ++i) {
+		fout << group_index[i] << " \n"[i==group_index.size()-1];
+	}
+	// close file
+	fout.close();
+}
+
 int Detector::StartRun(int continue_run)
 {
 	std::cout<<"RUN START"<<std::endl;
@@ -602,6 +640,14 @@ int Detector::StartRun(int continue_run)
 			&publisher_options_
 		);
 	}
+
+	// save online needed information
+	SaveOnlineInformation(
+		runnumber,
+		crateid,
+		*modulesamplingrate,
+		group_index_
+	);
 
 	return 0;
 }
@@ -710,7 +756,7 @@ int Detector::ReadDataFromModules(int thres,unsigned short  endofrun) {
 					// get copy words
 					size_t copy_words = packet_unread_words_[i];
 					// get packet tail
-					packet_tail_[i] = packet_unread_words_[i] % 4;
+					packet_tail_[i] = packet_unread_words_[i] % module_align_[i];
 					// align in 4 words
 					copy_words -= packet_tail_[i];
 					// copy to shared memory
@@ -720,11 +766,11 @@ int Detector::ReadDataFromModules(int thres,unsigned short  endofrun) {
 						copy_words*sizeof(unsigned int)
 					);
 					header_[i]->length += copy_words;
-if (header_[i]->length > PACKET_SIZE) std::cout << "Packet " << packet_id_[group_index_[i]] << " over size, " << i << ", " << header_[i]->length << "\n";
-if (packet_read_position_[i]+copy_words > buffer_top_[i]) std::cout << "Copy over buffer top, " << i << ", "
-	<< "read position " << packet_read_position_[i] << ", copy words " << copy_words
-	<< ", buffer top " << buffer_top_[i] << ", packet id " << packet_id_[group_index_[i]] << "\n";
-					packet_tail_[i] = (4 - packet_tail_[i]) % 4;
+// if (header_[i]->length > PACKET_SIZE) std::cout << "Packet " << packet_id_[group_index_[i]] << " over size, " << i << ", " << header_[i]->length << "\n";
+// if (packet_read_position_[i]+copy_words > buffer_top_[i]) std::cout << "Copy over buffer top, " << i << ", "
+// 	<< "read position " << packet_read_position_[i] << ", copy words " << copy_words
+// 	<< ", buffer top " << buffer_top_[i] << ", packet id " << packet_id_[group_index_[i]] << "\n";
+					packet_tail_[i] = (module_align_[i] - packet_tail_[i]) % module_align_[i];
 					packet_read_position_[i] = packet_tail_[i];
 					packet_unread_words_[i] = 0;
 				}
@@ -755,18 +801,18 @@ if (packet_read_position_[i]+copy_words > buffer_top_[i]) std::cout << "Copy ove
 					packet_unread_words_[i] + header_[i]->length <= PACKET_SIZE
 					? packet_unread_words_[i]
 					: PACKET_SIZE - header_[i]->length;
-				copy_words -= copy_words % 4;
+				copy_words -= copy_words % module_align_[i];
 				memcpy(
 					(void*)(packet_[i]->data+header_[i]->length),
 					(void*)(buffer_[i]+packet_read_position_[i]),
-					copy_words*sizeof(unsigned int)    
+					copy_words*sizeof(unsigned int)
 				);
 				// update variable
 				header_[i]->length += copy_words;
-if (header_[i]->length > PACKET_SIZE) std::cout << "Packet " << packet_id_[group_index_[i]] << " over size " << i << ", " << header_[i]->length << "\n";
-if (packet_read_position_[i]+copy_words > buffer_top_[i]) std::cout << "Copy over buffer top, " << i << ", "
-	<< "read position " << packet_read_position_[i] << ", copy words " << copy_words
-	<< ", buffer top " << buffer_top_[i] << ", packet id " << packet_id_[group_index_[i]] << "\n";
+// if (header_[i]->length > PACKET_SIZE) std::cout << "Packet " << packet_id_[group_index_[i]] << " over size " << i << ", " << header_[i]->length << "\n";
+// if (packet_read_position_[i]+copy_words > buffer_top_[i]) std::cout << "Copy over buffer top, " << i << ", "
+// 	<< "read position " << packet_read_position_[i] << ", copy words " << copy_words
+// 	<< ", buffer top " << buffer_top_[i] << ", packet id " << packet_id_[group_index_[i]] << "\n";
 				packet_read_position_[i] += copy_words;
 				packet_unread_words_[i] -= copy_words;
 				// publish
@@ -1120,19 +1166,6 @@ int Detector::StopRun()
 			packet_[i] = nullptr;
 		}
 		iox_pub_deinit(publishers_[i]);
-
-		// if (user_payload_[i]) {
-		// 	SavetoFile(i);
-
-		// 	// write packet ID
-		// 	header_[i]->id = packet_id_[i];
-		// 	iox_pub_publish_chunk(publishers_[i], user_payload_[i]);
-		// 	++packet_id_[i];
-		// 	user_payload_[i] = nullptr;
-		// 	header_[i] = nullptr;
-		// 	packet_[i] = nullptr;
-		// }
-		// iox_pub_deinit(publishers_[i]);
 	}
 	CloseFile();
 
