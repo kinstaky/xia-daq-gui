@@ -168,13 +168,13 @@ iox-roudi
 
 + [简介](index.md)
 + 用户指南
-  + [上手指南](getting_started.md)，提供最少的信息，帮助用户快速开始编写在线程序
-  + [模板详解](template_walk_through.md)，解释在线程序模板，帮助用户了解在线程序的细节
-  + [示例详解](example_details.md)，解释本项目提供的示例，帮助用户更好了解在线程序中数据处理的方法
+    + [上手指南](getting_started.md)，提供最少的信息，帮助用户快速开始编写在线程序
+    + [模板详解](template_walk_through.md)，解释在线程序模板，帮助用户了解在线程序的细节
+    + [示例详解](example_details.md)，解释本项目提供的示例，帮助用户更好了解在线程序中数据处理的方法
 
 + 开发者指南
-  + [内存模型](memory_model.md)，从获取插件和计算机内存角度探讨数据获取的过程
-  + [获取代码详解](daq_walk_through.md)，从获取的代码出发，了解计算机从获取插件读取数据、存储数据到硬盘、通过共享内存传输数据的过程
-  + [在线读取详解](online_receiver.md)，从在线的代码触发，了解在线程序时如何从共享内存中读取数据，并将数据解码、重组成事件
+    + [内存模型](memory_model.md)，从获取插件和计算机内存角度探讨数据获取的过程
+    + [获取代码详解](daq_walk_through.md)，从获取的代码出发，了解计算机从获取插件读取数据、存储数据到硬盘、通过共享内存传输数据的过程
+    + [在线读取详解](online_receiver.md)，从在线的代码触发，了解在线程序时如何从共享内存中读取数据，并将数据解码、重组成事件
 + 附录
-  + [在 Ubuntu 中编译 PLXSDK](compile_plxsdk_ubuntu.md)，使用 Ubuntu 时需要对 PLXSDK 进行一点修改
+    + [在 Ubuntu 中编译 PLXSDK](compile_plxsdk_ubuntu.md)，使用 Ubuntu 时需要对 PLXSDK 进行一点修改

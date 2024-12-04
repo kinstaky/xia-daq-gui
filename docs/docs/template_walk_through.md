@@ -262,15 +262,15 @@ root_generate_dictionary(
 模板中一共包含 5 个命令
 
 1. `add_executable` 新增一个可执行文件，包含 2 个参数
-   1. 可执行文件的名字，即编译后的程序就叫 `online_template`
-   2. 源代码文件的名字
-2. `target_include_directories`，给一个目标设置包含路径。所谓的目标即 `add_executable` 或者 `add_library` 之类的命令添加的东西，这里设置的目标是`online_template`，即上一个命令所声明的。包含路径就是源码中包含的头文件的所在目录，这里指定了两个目录，一个是项目的根目录 `${PROJECT_SOURCE_DIR}`，另一个是 ROOT 的头文件目录 `ROOT_INCLUDE_DIR`
-3. `target_link_libraries`，给一个目标设置链接的库，这里目标设置为 `online_template`。而链接的库是 `online_data_receiver`是[上手指南](getting_started.md)中提到 `OnlineDataReceiver` 类。另外两个链接的库是 ROOT 相关的，分别是 TH1、TH2、TGraph 相关的 `ROOT::Graf` 和 TCanvas 相关的 `ROOT::Gpad`
-4. `set_target_properties`，给一个目标设置一些编译参数，这里主要是依赖的 iceoryx 库要求的，实际就设置了两个参数，一个是 iceoryx 要求的 C++ 标准，另一个是需要位置无关的代码
-5. `root_generate_dictionary`，这个是 ROOT 所需要的。前面提到了 `SignalHandler` 比较特殊，继承自 `RQ_Object`，所以需要用这样的方式来链接动态库。
-   1. `online_template_dict` 是一个新的目标，本质是代码生成， `SignalHandler`继承自 `RQ_Object` 后被添加了一些新的代码，新的代码会编译出一个动态库，库的名字就是 `online_template_dict`（这一段有一部分是我猜的）
-   2. `${PROJECT_SOURCE_DIR}/include/signal_handler.h` 告诉 cmake `SignalHandler` 在哪里声明和定义
-   3. `MODULE online_template` 告诉 cmake，把 ROOT 生成的 `online_template_dict` 链接到 `online_template` 上
-   4. `LINKDEF ${PROJECT_SOURCE_DIR}/include/linkdef.h` 告诉 cmake 对应的 `linkdef.h` 文件在哪，这一部分应该是和 cint 相关的，我不太了解
+    1. 可执行文件的名字，即编译后的程序就叫 `online_template`
+    2. 源代码文件的名字
+2.  `target_include_directories`，给一个目标设置包含路径。所谓的目标即 `add_executable` 或者 `add_library` 之类的命令添加的东西，这里设置的目标是`online_template`，即上一个命令所声明的。包含路径就是源码中包含的头文件的所在目录，这里指定了两个目录，一个是项目的根目录 `${PROJECT_SOURCE_DIR}`，另一个是 ROOT 的头文件目录 `ROOT_INCLUDE_DIR`
+3.  `target_link_libraries`，给一个目标设置链接的库，这里目标设置为 `online_template`。而链接的库是 `online_data_receiver`是[上手指南](getting_started.md)中提到 `OnlineDataReceiver` 类。另外两个链接的库是 ROOT 相关的，分别是 TH1、TH2、TGraph 相关的 `ROOT::Graf` 和 TCanvas 相关的 `ROOT::Gpad`
+4.  `set_target_properties`，给一个目标设置一些编译参数，这里主要是依赖的 iceoryx 库要求的，实际就设置了两个参数，一个是 iceoryx 要求的 C++ 标准，另一个是需要位置无关的代码
+5.  `root_generate_dictionary`，这个是 ROOT 所需要的。前面提到了 `SignalHandler` 比较特殊，继承自 `RQ_Object`，所以需要用这样的方式来链接动态库。
+    1.  `online_template_dict` 是一个新的目标，本质是代码生成， `SignalHandler`继承自 `RQ_Object` 后被添加了一些新的代码，新的代码会编译出一个动态库，库的名字就是 `online_template_dict`（这一段有一部分是我猜的）
+    2.  `${PROJECT_SOURCE_DIR}/include/signal_handler.h` 告诉 cmake `SignalHandler` 在哪里声明和定义
+    3.  `MODULE online_template` 告诉 cmake，把 ROOT 生成的 `online_template_dict` 链接到 `online_template` 上
+    4.  `LINKDEF ${PROJECT_SOURCE_DIR}/include/linkdef.h` 告诉 cmake 对应的 `linkdef.h` 文件在哪，这一部分应该是和 cint 相关的，我不太了解
 
 实际使用时，只需要简单修改 `online_template` 即可。
