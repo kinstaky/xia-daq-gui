@@ -1121,11 +1121,13 @@
 <li><code>target_include_directories</code>，给一个目标设置包含路径。所谓的目标即 <code>add_executable</code> 或者 <code>add_library</code> 之类的命令添加的东西，这里设置的目标是<code>online_template</code>，即上一个命令所声明的。包含路径就是源码中包含的头文件的所在目录，这里指定了两个目录，一个是项目的根目录 <code>${PROJECT_SOURCE_DIR}</code>，另一个是 ROOT 的头文件目录 <code>ROOT_INCLUDE_DIR</code></li>
 <li><code>target_link_libraries</code>，给一个目标设置链接的库，这里目标设置为 <code>online_template</code>。而链接的库是 <code>online_data_receiver</code>是<a href="../getting_started/">上手指南</a>中提到 <code>OnlineDataReceiver</code> 类。另外两个链接的库是 ROOT 相关的，分别是 TH1、TH2、TGraph 相关的 <code>ROOT::Graf</code> 和 TCanvas 相关的 <code>ROOT::Gpad</code></li>
 <li><code>set_target_properties</code>，给一个目标设置一些编译参数，这里主要是依赖的 iceoryx 库要求的，实际就设置了两个参数，一个是 iceoryx 要求的 C++ 标准，另一个是需要位置无关的代码</li>
-<li><code>root_generate_dictionary</code>，这个是 ROOT 所需要的。前面提到了 <code>SignalHandler</code> 比较特殊，继承自 <code>RQ_Object</code>，所以需要用这样的方式来链接动态库。</li>
+<li><code>root_generate_dictionary</code>，这个是 ROOT 所需要的。前面提到了 <code>SignalHandler</code> 比较特殊，继承自 <code>RQ_Object</code>，所以需要用这样的方式来链接动态库。<ol>
 <li><code>online_template_dict</code> 是一个新的目标，本质是代码生成， <code>SignalHandler</code>继承自 <code>RQ_Object</code> 后被添加了一些新的代码，新的代码会编译出一个动态库，库的名字就是 <code>online_template_dict</code>（这一段有一部分是我猜的）</li>
 <li><code>${PROJECT_SOURCE_DIR}/include/signal_handler.h</code> 告诉 cmake <code>SignalHandler</code> 在哪里声明和定义</li>
 <li><code>MODULE online_template</code> 告诉 cmake，把 ROOT 生成的 <code>online_template_dict</code> 链接到 <code>online_template</code> 上</li>
 <li><code>LINKDEF ${PROJECT_SOURCE_DIR}/include/linkdef.h</code> 告诉 cmake 对应的 <code>linkdef.h</code> 文件在哪，这一部分应该是和 cint 相关的，我不太了解</li>
+</ol>
+</li>
 </ol>
 <p>实际使用时，只需要简单修改 <code>online_template</code> 即可。</p>
 
