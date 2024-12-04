@@ -2,6 +2,9 @@ site_name: XIA online GUI
 site_url: https://kinstaky.github.io/xia-daq-gui-online
 site_author: pwl
 
+repo_url: https://github.com/kinstaky/xia-daq-gui-online
+repo_name: kinstaky/xia-daq-gui-online
+
 theme:
   name: material
   palette:
@@ -10,6 +13,8 @@ theme:
   features:
     - content.code.copy
     - navigation.expand
+  icon:
+    repo: fontawesome/brands/github
 
 extra:
   version:
@@ -25,6 +30,7 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.arithmatex:
       generic: true
+  - github-callouts
 
 extra_javascript:
   - javascripts/mathjax.js
