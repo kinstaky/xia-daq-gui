@@ -35,10 +35,18 @@ public:
 		int y,
 		TObject*
 	) {
-		if (event == 24 && x == 0 && y == 4148) {
+		if (
+			(event == 24 && x == 0 && y == 4148)
+			|| (event == 24 && x == 114 && y == 114)
+		) {
+			// F5 and r
 			should_refresh_ = true;
-		} else if (event == 24 && x == 114 && y == 114) {
-			should_refresh_ = true;
+		} else if (
+			(event == 24 && x == 0 && y == 4155)
+			|| (event == 24 && x == 115 && y == 115)
+		) {
+			// F12 and s
+			should_save_ = true;
 		}
 	}
 
@@ -53,8 +61,22 @@ public:
 		return false;
 	}
 
+
+	/// @brief check whether it's needed to save
+	/// @returns true if it's needed to save, false otherwise
+	///
+	bool ShouldSave() {
+		if (should_save_) {
+			should_save_ = false;
+			return true;
+		}
+		return false;
+	}
+
+
 private:
 	bool should_refresh_;
+	bool should_save_;
 };
 
 
