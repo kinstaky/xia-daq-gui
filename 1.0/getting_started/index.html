@@ -911,11 +911,11 @@
 <ol>
 <li>确定在线的窗口里要画几个图（后面假设为 N 个），</li>
 <li>确定每个图都画什么东西</li>
-<li>修改第 27 行的 <code>graph_num</code> 变量，修改为需要画的图的数量 N。</li>
+<li>修改第 29 行的 <code>graph_num</code> 变量，修改为需要画的图的数量 N。</li>
 </ol>
 <div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">graph_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">;</span>
 </code></pre></div></td></tr></table></div>
-<p>接着转到第  105 行</p>
+<p>接着转到第  150 行</p>
 <div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
@@ -948,12 +948,12 @@
 <li>用 <code>Divide</code> 函数将 <code>canvas</code> 分割成好几份</li>
 <li>用 <code>Draw</code> 和 <code>cd</code> 分别在 <code>canvas</code> 每一份中画一个图</li>
 </ol>
-<p>最后跳转到第 123 行</p>
+<p>最后跳转到第 168 行</p>
 <div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">TH1</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">histograms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">hist1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">hist2</span><span class="p">};</span>
 </code></pre></div></td></tr></table></div>
 <p>将所有的直方图的指针放到 <code>histograms</code>中，这是为了可以在键入 <strong>r</strong> 或者 <strong>F5</strong> 的时候重置图像。</p>
 <h3 id="_5">写数据分析的代码</h3>
-<p>接着是核心部分的，数据分析相关的代码。这也是不同实验中最大的差异。从第 135 行开始就是从共享内存中读取数据并分析、画图。</p>
+<p>接着是核心部分的，数据分析相关的代码。这也是不同实验中最大的差异。从第 182 行开始就是从共享内存中读取数据并分析、画图。</p>
 <div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
@@ -1048,6 +1048,7 @@
 <li><code>window_width</code> 程序窗口的宽度，单位为像素</li>
 <li><code>window_height</code>程序窗口的高度，单位为像素</li>
 <li><code>time_window</code>符合窗的宽度，单位为 ns</li>
+<li><code>screenshot_path</code> 截图的保存路径</li>
 </ol>
 <h3 id="daq">DAQ 运行时参数</h3>
 <p>如果你已经比较熟悉 PKUXIADAQ，那么一定对 <code>parset/cfgPixie16.txt</code> 这个配置文件不陌生。本项目在其中加入了几行用于在线程序的配置，需要根据实际情况调整。需要该的参数包括 <code>ModuleGroupIndex</code>（第 35 行）和 <code>ModuleAlignment</code>（第 39 行）。其中 <code>ModuleGroupIndex</code>，即组编号，是和<strong>组策略</strong>机制相关的。而 <code>ModuleAlignment</code>，即模块对齐参数，是和共享内存传输数据的机制相关。这两个参数的设置都和 <code>ModuleBits</code> 类似，第一个数表示有多少个模块，后面的数依次表示每个模块对应参数的值。下面两小节将分别解释如何设置这两个参数。</p>

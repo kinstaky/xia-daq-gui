@@ -818,7 +818,11 @@
 <span class="normal"><a href="#__codelineno-0-48">48</a></span>
 <span class="normal"><a href="#__codelineno-0-49">49</a></span>
 <span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="k">constexpr</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">app_name</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;online_example&quot;</span><span class="p">;</span>
+<span class="normal"><a href="#__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#__codelineno-0-55">55</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="k">constexpr</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">app_name</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;online_example&quot;</span><span class="p">;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a>
 <a id="__codelineno-0-3" name="__codelineno-0-3"></a>
 <a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="c1">// ROOT multi-thread preparation</span>
@@ -847,35 +851,39 @@
 <a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">TH1</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">histograms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="w">    </span><span class="o">&amp;</span><span class="n">hist1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">hist2</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="p">};</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="c1">// update GUI</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="nf">update_gui_thread</span><span class="p">(</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="w">    </span><span class="n">UpdateGui</span><span class="p">,</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="w">    </span><span class="n">canvas</span><span class="p">,</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="w">    </span><span class="n">signal_handler</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="w">    </span><span class="n">histograms</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="p">);</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="n">OnlineDataReceiver</span><span class="w"> </span><span class="n">receiver</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;DaqPacket&quot;</span><span class="p">);</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">receiver</span><span class="p">.</span><span class="n">Alive</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DecodeEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">receiver</span><span class="p">.</span><span class="n">ReceiveEvent</span><span class="p">(</span><span class="n">time_window</span><span class="p">);</span>
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="w">        </span><span class="n">event</span><span class="p">;</span>
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="w">        </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">receiver</span><span class="p">.</span><span class="n">ReceiveEvent</span><span class="p">(</span><span class="n">time_window</span><span class="p">)</span>
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="w">        </span><span class="n">FillOnlineGraph</span><span class="p">(</span><span class="o">*</span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">hist1</span><span class="p">,</span><span class="w"> </span><span class="n">hist2</span><span class="p">);</span>
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="p">}</span>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="c1">// wait for thread</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="n">update_gui_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="n">st</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">screenshot_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetScreenShotName</span><span class="p">();</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="c1">// update GUI</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="nf">update_gui_thread</span><span class="p">(</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="w">    </span><span class="n">UpdateGui</span><span class="p">,</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="w">    </span><span class="n">canvas</span><span class="p">,</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="w">    </span><span class="n">signal_handler</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="w">    </span><span class="n">histograms</span><span class="p">,</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="n">screenshot_name</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="p">);</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="n">OnlineDataReceiver</span><span class="w"> </span><span class="n">receiver</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;DaqPacket&quot;</span><span class="p">);</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">receiver</span><span class="p">.</span><span class="n">Alive</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DecodeEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">receiver</span><span class="p">.</span><span class="n">ReceiveEvent</span><span class="p">(</span><span class="n">time_window</span><span class="p">);</span>
+<a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="w">        </span><span class="n">event</span><span class="p">;</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="w">        </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">receiver</span><span class="p">.</span><span class="n">ReceiveEvent</span><span class="p">(</span><span class="n">time_window</span><span class="p">)</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="w">        </span><span class="n">FillOnlineGraph</span><span class="p">(</span><span class="o">*</span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">hist1</span><span class="p">,</span><span class="w"> </span><span class="n">hist2</span><span class="p">);</span>
+<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="p">}</span>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="c1">// wait for thread</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="n">update_gui_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="c1">// terminate ROOT app</span>
+<a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="n">gApplication</span><span class="o">-&gt;</span><span class="n">Terminate</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 <p>上面的 <code>main()</code> 函数的代码，可以主要分为 4 块。</p>
 <ol>
 <li>4-21 行的 ROOT 相关的准备</li>
 <li>24-36 行的用户输入响应</li>
-<li>39-48 行的读取数据并处理</li>
-<li>51 行程序结束清理</li>
+<li>41-50 行的读取数据并处理</li>
+<li>52-55 行程序结束清理</li>
 </ol>
 <p>在线程序首先读入输入参数，确定需要处理的是哪个 run 哪个机箱的数据。然后做一些 ROOT 相关的准备，准备好在线需要的直方图。用户输入的响应主要是两部分，一是按照设定的帧率刷新直方图，二是对键盘鼠标输入的响应。核心的部分是从共享内存中读取数据，然后根据用户编写的算法进行实质的在线分析，并填到直方图中。这部分也是经常做数据分析的人所擅长的。最后是清理一下程序中的东西，并优雅地结束程序。</p>
 <p><strong>如果只是想要简单地开发基本能用的在线程序，实际上只需要关注第 3 部分数据处理相关的就足够了。</strong>下面将详细解释每一部分的工作流程。</p>
@@ -935,6 +943,7 @@
 <ol>
 <li>点击窗口的关闭按钮终止在线程序</li>
 <li>按 <strong>r</strong> 或者 <strong>F5</strong> 重置图像</li>
+<li>按 <strong>s</strong> 或者 <strong>F12</strong> 保存截图</li>
 </ol>
 <p>这两个功能都是依靠 <code>HandleSignal()</code>实现的。这个函数又依赖于 <code>SignalHandler</code>类，虽然听起来像套娃，但这都是有必要的。</p>
 <div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
@@ -974,29 +983,53 @@
 <a id="__codelineno-2-18" name="__codelineno-2-18"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>上面的代码第 3-4 行使用智能指针创建了 <code>SignalHandler</code>类的实例，智能指针的好处就是不用自己管理内存，这个指针没用时会自动释放内存。<code>SignalHandler</code> 顾名思义，就是用来处理各种输入信号的，具体细节后面再看。</p>
-<p>第 6-10 行，将窗口的关闭按钮和 <code>SignalHandler</code>的 <code>Terminate()</code> 函数关联起来，再用户点击关闭按钮同时，会调用<code>Terminate()</code>函数。该函数做两件事，第一是产生一个中断信号，类似于按 Ctrl+C；第二是告诉 ROOT 可以终止程序了。产生中断信号是为了让管理共享内存的 iceoryx 停止工作，这个会在第三部分再次提到。</p>
+<p>第 6-10 行，将窗口的关闭按钮和 <code>SignalHandler</code>的 <code>Terminate()</code> 函数关联起来，再用户点击关闭按钮同时，会调用<code>Terminate()</code>函数。该函数产生一个中断信号，类似于按 Ctrl+C。这是为了让管理共享内存的 iceoryx 停止工作，这个会在第三部分再次提到。</p>
 <div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
 <span class="normal"><a href="#__codelineno-3-2">2</a></span>
-<span class="normal"><a href="#__codelineno-3-3">3</a></span>
-<span class="normal"><a href="#__codelineno-3-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">Terminate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">Terminate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">raise</span><span class="p">(</span><span class="n">SIGINT</span><span class="p">);</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span><span class="n">gApplication</span><span class="o">-&gt;</span><span class="n">Terminate</span><span class="p">();</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="p">}</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>第 11-16 行，将 ROOT 自身的处理键盘和鼠标输入的函数 <code>ProcessedEvent</code>和 <code>SignalHandler::Refresh</code> 函数关联起来，也就是说每次用户点击鼠标或者敲键盘时，都会调用 <code>Refresh</code> 函数并给一些输入信息。<code>Refresh</code> 函数在发现输入信息是 <strong>F5</strong> 或者 <strong>r</strong> 时就会设置 <code>should_refresh_</code> 为真，这里不直接重置图像是因为 <code>SignalHandler</code> 本身并不知道应该重置哪些图像，而想要让它知道就要传递更多的参数，这样就不够灵活了。而这里设置一个变量给外面的函数或者类判断是否需要重置，就可以在这个类外面完成重置的事情。所谓的外面，其实就是指的用户编写的在线程序。</p>
-<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
-<span class="normal"><a href="#__codelineno-4-2">2</a></span>
-<span class="normal"><a href="#__codelineno-4-3">3</a></span>
-<span class="normal"><a href="#__codelineno-4-4">4</a></span>
-<span class="normal"><a href="#__codelineno-4-5">5</a></span>
-<span class="normal"><a href="#__codelineno-4-6">6</a></span>
-<span class="normal"><a href="#__codelineno-4-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">Refresh</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">TObject</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">24</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">4148</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">        </span><span class="n">should_refresh_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">24</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">114</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">114</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">        </span><span class="n">should_refresh_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="p">}</span>
+<p>第 11-16 行，将 ROOT 自身的处理键盘和鼠标输入的函数 <code>ProcessedEvent</code>和 <code>SignalHandler::Refresh</code> 函数关联起来，也就是说每次用户点击鼠标或者敲键盘时，都会调用 <code>Refresh</code> 函数并给一些输入信息。<code>Refresh</code> 函数在发现输入信息是 <strong>F5</strong> 或者 <strong>r</strong> 时就会设置 <code>should_refresh_</code> 为真，这里不直接重置图像是因为 <code>SignalHandler</code> 本身并不知道应该重置哪些图像，而想要让它知道就要传递更多的参数，这样就不够灵活了。而这里设置一个变量给外面的函数或者类判断是否需要重置，就可以在这个类外面完成重置的事情。所谓的外面，其实就是指的用户编写的在线程序。同理，在检测到 <strong>F12</strong> 或者 <strong>s</strong> 时就会设置 <code>should_save_</code> 为真，告诉外面的程序是时候截图保存了。</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span>
+<span class="normal"><a href="#__codelineno-4-15">15</a></span>
+<span class="normal"><a href="#__codelineno-4-16">16</a></span>
+<span class="normal"><a href="#__codelineno-4-17">17</a></span>
+<span class="normal"><a href="#__codelineno-4-18">18</a></span>
+<span class="normal"><a href="#__codelineno-4-19">19</a></span>
+<span class="normal"><a href="#__codelineno-4-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">Refresh</span><span class="p">(</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">event</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">,</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="n">TObject</span><span class="o">*</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">        </span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">24</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">4148</span><span class="p">)</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">        </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">24</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">114</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">114</span><span class="p">)</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">        </span><span class="c1">// F5 and r</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">        </span><span class="n">should_refresh_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">        </span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">24</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">4155</span><span class="p">)</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="w">        </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">24</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">115</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">115</span><span class="p">)</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="w">        </span><span class="c1">// F12 and s</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18"></a><span class="w">        </span><span class="n">should_save_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>另一方面，程序中使用的 <code>Connect</code> 函数是 ROOT 提供的，要求关联的类必须是继承自 <code>RQ_Object</code>的，所以必须设置 <code>SignalHandler</code> 这个类。而且这个类编译时还需要关联 <code>LinkDef.h</code> 头文件，所以编译时还需要用到一些技巧，详见后面的<strong>用cmake构建</strong>一节。</p>
 <h3 id="_5">持续更新图像</h3>
@@ -1035,32 +1068,52 @@
 <span class="normal"><a href="#__codelineno-6-17">17</a></span>
 <span class="normal"><a href="#__codelineno-6-18">18</a></span>
 <span class="normal"><a href="#__codelineno-6-19">19</a></span>
-<span class="normal"><a href="#__codelineno-6-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateGui</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-6-20">20</a></span>
+<span class="normal"><a href="#__codelineno-6-21">21</a></span>
+<span class="normal"><a href="#__codelineno-6-22">22</a></span>
+<span class="normal"><a href="#__codelineno-6-23">23</a></span>
+<span class="normal"><a href="#__codelineno-6-24">24</a></span>
+<span class="normal"><a href="#__codelineno-6-25">25</a></span>
+<span class="normal"><a href="#__codelineno-6-26">26</a></span>
+<span class="normal"><a href="#__codelineno-6-27">27</a></span>
+<span class="normal"><a href="#__codelineno-6-28">28</a></span>
+<span class="normal"><a href="#__codelineno-6-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateGui</span><span class="p">(</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="w">    </span><span class="n">TCanvas</span><span class="w"> </span><span class="o">*</span><span class="n">canvas</span><span class="p">,</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="w">    </span><span class="n">SignalHandler</span><span class="w"> </span><span class="o">*</span><span class="n">handler</span><span class="p">,</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">TH1</span><span class="o">*&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">histograms</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">iox</span><span class="o">::</span><span class="n">posix</span><span class="o">::</span><span class="n">hasTerminationRequested</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">graph_num</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">            </span><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">cd</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">            </span><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">Update</span><span class="p">();</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">            </span><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">Pad</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Draw</span><span class="p">();</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="w">        </span><span class="p">}</span>
-<a id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">handler</span><span class="o">-&gt;</span><span class="n">ShouldRefresh</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-13" name="__codelineno-6-13"></a><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">histograms</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="w">                </span><span class="n">histograms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">Reset</span><span class="p">();</span>
-<a id="__codelineno-6-15" name="__codelineno-6-15"></a><span class="w">            </span><span class="p">}</span>
-<a id="__codelineno-6-16" name="__codelineno-6-16"></a><span class="w">        </span><span class="p">}</span>
-<a id="__codelineno-6-17" name="__codelineno-6-17"></a><span class="w">        </span><span class="n">gSystem</span><span class="o">-&gt;</span><span class="n">ProcessEvents</span><span class="p">();</span>
-<a id="__codelineno-6-18" name="__codelineno-6-18"></a><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="mi">1000</span><span class="o">/</span><span class="n">fresh_rate</span><span class="p">));</span>
-<a id="__codelineno-6-19" name="__codelineno-6-19"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-6-20" name="__codelineno-6-20"></a><span class="p">}</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">TH1</span><span class="o">*&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">histograms</span><span class="p">,</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">screenshot_name</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">iox</span><span class="o">::</span><span class="n">posix</span><span class="o">::</span><span class="n">hasTerminationRequested</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">graph_num</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">            </span><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">cd</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">            </span><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">Update</span><span class="p">();</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="w">            </span><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">Pad</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Draw</span><span class="p">();</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">handler</span><span class="o">-&gt;</span><span class="n">ShouldRefresh</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">histograms</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15"></a><span class="w">                </span><span class="n">histograms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">Reset</span><span class="p">();</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">handler</span><span class="o">-&gt;</span><span class="n">ShouldSave</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19"></a><span class="w">            </span><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">Print</span><span class="p">((</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20"></a><span class="w">                </span><span class="n">screenshot_path</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">screenshot_name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">GetTime</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;.png&quot;</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21"></a><span class="w">            </span><span class="p">).</span><span class="n">c_str</span><span class="p">());</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-6-23" name="__codelineno-6-23"></a><span class="w">        </span><span class="n">gSystem</span><span class="o">-&gt;</span><span class="n">ProcessEvents</span><span class="p">();</span>
+<a id="__codelineno-6-24" name="__codelineno-6-24"></a><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="mi">1000</span><span class="o">/</span><span class="n">fresh_rate</span><span class="p">));</span>
+<a id="__codelineno-6-25" name="__codelineno-6-25"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-26" name="__codelineno-6-26"></a><span class="w">    </span><span class="n">canvas</span><span class="o">-&gt;</span><span class="n">Print</span><span class="p">((</span>
+<a id="__codelineno-6-27" name="__codelineno-6-27"></a><span class="w">        </span><span class="n">screenshot_path</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">screenshot_name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">GetTime</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;.png&quot;</span>
+<a id="__codelineno-6-28" name="__codelineno-6-28"></a><span class="w">    </span><span class="p">).</span><span class="n">c_str</span><span class="p">());</span>
+<a id="__codelineno-6-29" name="__codelineno-6-29"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>这个函数主体是一个循环，终止条件是用户按下 Ctrl+C。前面提到了用户点击关闭按钮时，会触发<code>SignalHandler::Terminate</code>函数并调用 <code>raise(SIGINT)</code> 函数，这同样会产生一个中断信号，和按下 Ctrl+C 是一样。换句话说，这个循环的终止条件是用户按下 Ctrl+C 或者点击窗口右上角的关闭按钮。</p>
-<p>循环中的 7-11 行是遍历画布中的所有 pad，并更新图像，常规的 ROOT 代码。</p>
-<p>第 12-16 行是问一下 <code>SignalHandler</code> 有没有收到重置图像的指令，有的话就重置所有的图像。因为需要知道要重置哪些图像，所以需要传入参数<code>const std::vector&lt;TH1*&gt; &amp;histograms</code>，这里需要传入所有的需要重置的图像的指针。所以可以在 <code>main()</code>函数代码中的 31-33 行看到需要构建一个直方图的数组。</p>
-<p>第 17 行是 ROOT 周期性的刷新，可以简单理解成刷新窗口。</p>
-<p>第 18 行是休眠，根据设置的刷新率休眠一定时间。注意到这里以 us 为单位，所以刷新率不能高于 1000 Hz，当然，实际使用时，10 Hz 以下的刷新率就绰绰有余了。</p>
+<p>循环中的 8-12 行是遍历画布中的所有 pad，并更新图像，常规的 ROOT 代码。</p>
+<p>第 13-17 行是问一下 <code>SignalHandler</code> 有没有收到重置图像的指令，有的话就重置所有的图像。因为需要知道要重置哪些图像，所以需要传入参数<code>const std::vector&lt;TH1*&gt; &amp;histograms</code>，这里需要传入所有的需要重置的图像的指针。所以可以在 <code>main()</code>函数代码中的 27-29 行看到需要构建一个直方图的数组。</p>
+<p>第 18-22 行时保存截图，保存的截图的路径是在一开始的参数中设置的，而每个文件会按照机箱编号-run-时间的形式来组织。所以一方面需要 <code>screenshot_name</code> 来输入包含机箱和 run 信息的字符串，另一方面需要用 <code>GetTime()</code> 函数来获取当前时间并转化为字符串。</p>
+<p>第 23 行是 ROOT 周期性的刷新，可以简单理解成刷新窗口。</p>
+<p>第 24 行是休眠，根据设置的刷新率休眠一定时间。注意到这里以 us 为单位，所以刷新率不能高于 1000 Hz，当然，实际使用时，10 Hz 以下的刷新率就绰绰有余了。</p>
+<p>第 26-28 是在结束这个函数之前，再保存一次截图。结束这个函数也意味着整个程序的结束，换句话说就是在程序关闭前，迅速保存一次截图，再关闭程序。</p>
 <h2 id="_6">读取内存并处理数据</h2>
 <p>详见<a href="../getting_started/">上手指南</a>。</p>
 <h2 id="_7">清理</h2>
@@ -1068,48 +1121,52 @@
 <div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="n">update_gui_thread</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 <p>来等待线程结束并回收。</p>
+<p>另一方面还需要结束之前创建的 <code>TApplication</code>，所以调用</p>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="n">gApplication</span><span class="o">-&gt;</span><span class="n">Terminate</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>来终止 ROOT 的程序。</p>
 <p>顺便一提，如果程序中有用到 <code>new</code> 或者 <code>malloc</code> 来申请内存，也应该在这一部分释放内存。</p>
 <h2 id="cmake">用 cmake 构建</h2>
 <p>这里简单解释模板 <code>CMakeLists.txt</code>中的代码的作用。当然，推荐还是系统学习 cmake，这里推荐 <a href="https://hsf-training.github.io/hsf-training-cmake-webpage/">HSF</a> 上的教程。</p>
-<div class="language-cmake highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-8-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-8-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-8-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-8-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-8-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-8-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-8-10">10</a></span>
-<span class="normal"><a href="#__codelineno-8-11">11</a></span>
-<span class="normal"><a href="#__codelineno-8-12">12</a></span>
-<span class="normal"><a href="#__codelineno-8-13">13</a></span>
-<span class="normal"><a href="#__codelineno-8-14">14</a></span>
-<span class="normal"><a href="#__codelineno-8-15">15</a></span>
-<span class="normal"><a href="#__codelineno-8-16">16</a></span>
-<span class="normal"><a href="#__codelineno-8-17">17</a></span>
-<span class="normal"><a href="#__codelineno-8-18">18</a></span>
-<span class="normal"><a href="#__codelineno-8-19">19</a></span>
-<span class="normal"><a href="#__codelineno-8-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="nb">add_executable</span><span class="p">(</span><span class="s">online_template</span><span class="w"> </span><span class="s">online_template.cpp</span><span class="p">)</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="nb">target_include_directories</span><span class="p">(</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="w">    </span><span class="s">online_template</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="w"> </span><span class="s">ROOT_INCLUDE_DIRS</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="p">)</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="nb">target_link_libraries</span><span class="p">(</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="w">    </span><span class="s">online_template</span><span class="w"> </span><span class="s">PUBLIC</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="w">    </span><span class="s">online_data_receiver</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="w">    </span><span class="s">ROOT::Graf</span><span class="w"> </span><span class="s">ROOT::Gpad</span>
-<a id="__codelineno-8-9" name="__codelineno-8-9"></a><span class="p">)</span>
-<a id="__codelineno-8-10" name="__codelineno-8-10"></a><span class="nb">set_target_properties</span><span class="p">(</span>
-<a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="w">    </span><span class="s">online_template</span><span class="w"> </span><span class="s">PROPERTIES</span>
-<a id="__codelineno-8-12" name="__codelineno-8-12"></a><span class="w">    </span><span class="s">CXX_STANDARD_REQUIRED</span><span class="w"> </span><span class="s">ON</span>
-<a id="__codelineno-8-13" name="__codelineno-8-13"></a><span class="w">    </span><span class="s">CXX_STANDARD</span><span class="w"> </span><span class="o">${</span><span class="nv">ICEORYX_CXX_STANDARD</span><span class="o">}</span>
-<a id="__codelineno-8-14" name="__codelineno-8-14"></a><span class="w">    </span><span class="s">POSITION_INDEPENDENT_CODE</span><span class="w"> </span><span class="s">ON</span>
-<a id="__codelineno-8-15" name="__codelineno-8-15"></a><span class="p">)</span>
-<a id="__codelineno-8-16" name="__codelineno-8-16"></a><span class="nb">root_generate_dictionary</span><span class="p">(</span>
-<a id="__codelineno-8-17" name="__codelineno-8-17"></a><span class="w">    </span><span class="s">online_template_dict</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="s">/include/signal_handler.h</span>
-<a id="__codelineno-8-18" name="__codelineno-8-18"></a><span class="w">    </span><span class="s">MODULE</span><span class="w"> </span><span class="s">online_template</span>
-<a id="__codelineno-8-19" name="__codelineno-8-19"></a><span class="w">    </span><span class="s">LINKDEF</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="s">/include/linkdef.h</span>
-<a id="__codelineno-8-20" name="__codelineno-8-20"></a><span class="p">)</span>
+<div class="language-cmake highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-9-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-9-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-9-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-9-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-9-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-9-10">10</a></span>
+<span class="normal"><a href="#__codelineno-9-11">11</a></span>
+<span class="normal"><a href="#__codelineno-9-12">12</a></span>
+<span class="normal"><a href="#__codelineno-9-13">13</a></span>
+<span class="normal"><a href="#__codelineno-9-14">14</a></span>
+<span class="normal"><a href="#__codelineno-9-15">15</a></span>
+<span class="normal"><a href="#__codelineno-9-16">16</a></span>
+<span class="normal"><a href="#__codelineno-9-17">17</a></span>
+<span class="normal"><a href="#__codelineno-9-18">18</a></span>
+<span class="normal"><a href="#__codelineno-9-19">19</a></span>
+<span class="normal"><a href="#__codelineno-9-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="nb">add_executable</span><span class="p">(</span><span class="s">online_template</span><span class="w"> </span><span class="s">online_template.cpp</span><span class="p">)</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="nb">target_include_directories</span><span class="p">(</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="w">    </span><span class="s">online_template</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="w"> </span><span class="s">ROOT_INCLUDE_DIRS</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="p">)</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="nb">target_link_libraries</span><span class="p">(</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="w">    </span><span class="s">online_template</span><span class="w"> </span><span class="s">PUBLIC</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="w">    </span><span class="s">online_data_receiver</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8"></a><span class="w">    </span><span class="s">ROOT::Graf</span><span class="w"> </span><span class="s">ROOT::Gpad</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="p">)</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10"></a><span class="nb">set_target_properties</span><span class="p">(</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11"></a><span class="w">    </span><span class="s">online_template</span><span class="w"> </span><span class="s">PROPERTIES</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12"></a><span class="w">    </span><span class="s">CXX_STANDARD_REQUIRED</span><span class="w"> </span><span class="s">ON</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13"></a><span class="w">    </span><span class="s">CXX_STANDARD</span><span class="w"> </span><span class="o">${</span><span class="nv">ICEORYX_CXX_STANDARD</span><span class="o">}</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14"></a><span class="w">    </span><span class="s">POSITION_INDEPENDENT_CODE</span><span class="w"> </span><span class="s">ON</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15"></a><span class="p">)</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16"></a><span class="nb">root_generate_dictionary</span><span class="p">(</span>
+<a id="__codelineno-9-17" name="__codelineno-9-17"></a><span class="w">    </span><span class="s">online_template_dict</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="s">/include/signal_handler.h</span>
+<a id="__codelineno-9-18" name="__codelineno-9-18"></a><span class="w">    </span><span class="s">MODULE</span><span class="w"> </span><span class="s">online_template</span>
+<a id="__codelineno-9-19" name="__codelineno-9-19"></a><span class="w">    </span><span class="s">LINKDEF</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="s">/include/linkdef.h</span>
+<a id="__codelineno-9-20" name="__codelineno-9-20"></a><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 <p>模板中一共包含 5 个命令</p>
 <ol>
