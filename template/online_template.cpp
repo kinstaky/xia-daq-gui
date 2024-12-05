@@ -38,6 +38,16 @@ const std::string screenshot_path =
 	std::string(getenv("HOME")) + "/Pictures/online/";
 
 
+std::string GetTime() {
+	// get current time
+	time_t current_time = time(NULL);
+	tm* current = localtime(&current_time);
+	// format time
+	char time_str[32];
+	strftime(time_str, 32, "%Y-%m-%d-%H-%M-%S", current);
+	return std::string(time_str);
+}
+
 /// @brief update ROOT GUI with specific FPS, read keyboard and refresh histograms
 /// @param[in] canvas pointer to main ROOT canvas
 /// @param[in] handler pointer to signal handler
@@ -62,19 +72,16 @@ void UpdateGui(
 			}
 		}
 		if (handler->ShouldSave()) {
-			// get current time
-			time_t current_time = time(NULL);
-			tm* current = localtime(&current_time);
-			// format time
-			char time_str[32];
-			strftime(time_str, 32, "%Y-%m-%d-%H-%M-%S.png", current);
 			canvas->Print((
-				screenshot_path + screenshot_name + std::string(time_str)
+				screenshot_path + screenshot_name + GetTime() + ".png"
 			).c_str());
 		}
 		gSystem->ProcessEvents();
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000/fresh_rate));
 	}
+	canvas->Print((
+		screenshot_path + screenshot_name + GetTime() + ".png"
+	).c_str());
 }
 
 
@@ -185,6 +192,8 @@ int main(int argc, char **argv) {
 
 	// wait for thread
 	update_gui_thread.join();
+	// terminate ROOT app
+	gApplication->Terminate();
 
 	return 0;
 }

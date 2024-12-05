@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <csignal>
+#include <thread>
+#include <chrono>
 
 #include <RQ_OBJECT.h>
 #include <TH1F.h>
@@ -17,13 +19,13 @@ public:
 	/// @brief constructor
 	SignalHandler() {
 		should_refresh_ = false;
+		should_save_ = false;
 	}
 
 
 	/// @brief stop the program
 	void Terminate() {
 		std::raise(SIGINT);
-		gApplication->Terminate();
 	}
 
 
