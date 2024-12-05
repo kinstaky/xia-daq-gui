@@ -20,13 +20,13 @@
 
 1. 确定在线的窗口里要画几个图（后面假设为 N 个），
 2. 确定每个图都画什么东西
-3. 修改第 27 行的 `graph_num` 变量，修改为需要画的图的数量 N。
+3. 修改第 29 行的 `graph_num` 变量，修改为需要画的图的数量 N。
 
 ```cpp
 constexpr int graph_num = N;
 ```
 
-接着转到第  105 行
+接着转到第  150 行
 
 ```cpp
 // create canvas
@@ -50,7 +50,7 @@ hist2.Draw();
 2. 用 `Divide` 函数将 `canvas` 分割成好几份
 3. 用 `Draw` 和 `cd` 分别在 `canvas` 每一份中画一个图
 
-最后跳转到第 123 行
+最后跳转到第 168 行
 
 ```cpp
 std::vector<TH1*> histograms = {&hist1, &hist2};
@@ -60,7 +60,7 @@ std::vector<TH1*> histograms = {&hist1, &hist2};
 
 ### 写数据分析的代码
 
-接着是核心部分的，数据分析相关的代码。这也是不同实验中最大的差异。从第 135 行开始就是从共享内存中读取数据并分析、画图。
+接着是核心部分的，数据分析相关的代码。这也是不同实验中最大的差异。从第 182 行开始就是从共享内存中读取数据并分析、画图。
 
 ```cpp
 OnlineDataReceiver receiver(app_name, "DaqPacket");
@@ -164,6 +164,7 @@ cmake --build build -- -j4
 3. `window_width` 程序窗口的宽度，单位为像素
 4. `window_height`程序窗口的高度，单位为像素
 5. `time_window`符合窗的宽度，单位为 ns
+6. `screenshot_path` 截图的保存路径
 
 ### DAQ 运行时参数
 

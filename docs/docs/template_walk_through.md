@@ -38,12 +38,14 @@ std::unique_ptr<SignalHandler> signal_handler = HandleSignal(canvas);
 std::vector<TH1*> histograms = {
     &hist1, &hist2
 };
+st::string screenshot_name = GetScreenShotName();
 // update GUI
 std::thread update_gui_thread(
     UpdateGui,
     canvas,
     signal_handler.get(),
-    histograms
+    histograms,
+    screenshot_name
 );
 
 
@@ -60,14 +62,16 @@ while (receiver.Alive()) {
 
 // wait for thread
 update_gui_thread.join();
+// terminate ROOT app
+gApplication->Terminate();
 ```
 
 上面的 `main()` 函数的代码，可以主要分为 4 块。
 
 1. 4-21 行的 ROOT 相关的准备
 2. 24-36 行的用户输入响应
-3. 39-48 行的读取数据并处理
-4. 51 行程序结束清理
+3. 41-50 行的读取数据并处理
+4. 52-55 行程序结束清理
 
 在线程序首先读入输入参数，确定需要处理的是哪个 run 哪个机箱的数据。然后做一些 ROOT 相关的准备，准备好在线需要的直方图。用户输入的响应主要是两部分，一是按照设定的帧率刷新直方图，二是对键盘鼠标输入的响应。核心的部分是从共享内存中读取数据，然后根据用户编写的算法进行实质的在线分析，并填到直方图中。这部分也是经常做数据分析的人所擅长的。最后是清理一下程序中的东西，并优雅地结束程序。
 
@@ -118,6 +122,7 @@ hist2.Draw();
 
 1. 点击窗口的关闭按钮终止在线程序
 2. 按 **r** 或者 **F5** 重置图像
+3. 按 **s** 或者 **F12** 保存截图
 
 这两个功能都是依靠 `HandleSignal()`实现的。这个函数又依赖于 `SignalHandler`类，虽然听起来像套娃，但这都是有必要的。
 
@@ -144,23 +149,35 @@ std::unique_ptr<SignalHandler> HandleSignal(TCanvas *canvas) {
 
 上面的代码第 3-4 行使用智能指针创建了 `SignalHandler`类的实例，智能指针的好处就是不用自己管理内存，这个指针没用时会自动释放内存。`SignalHandler` 顾名思义，就是用来处理各种输入信号的，具体细节后面再看。
 
-第 6-10 行，将窗口的关闭按钮和 `SignalHandler`的 `Terminate()` 函数关联起来，再用户点击关闭按钮同时，会调用`Terminate()`函数。该函数做两件事，第一是产生一个中断信号，类似于按 Ctrl+C；第二是告诉 ROOT 可以终止程序了。产生中断信号是为了让管理共享内存的 iceoryx 停止工作，这个会在第三部分再次提到。
+第 6-10 行，将窗口的关闭按钮和 `SignalHandler`的 `Terminate()` 函数关联起来，再用户点击关闭按钮同时，会调用`Terminate()`函数。该函数产生一个中断信号，类似于按 Ctrl+C。这是为了让管理共享内存的 iceoryx 停止工作，这个会在第三部分再次提到。
 
 ```cpp
 void Terminate() {
     std::raise(SIGINT);
-    gApplication->Terminate();
 }
 ```
 
-第 11-16 行，将 ROOT 自身的处理键盘和鼠标输入的函数 `ProcessedEvent`和 `SignalHandler::Refresh` 函数关联起来，也就是说每次用户点击鼠标或者敲键盘时，都会调用 `Refresh` 函数并给一些输入信息。`Refresh` 函数在发现输入信息是 **F5** 或者 **r** 时就会设置 `should_refresh_` 为真，这里不直接重置图像是因为 `SignalHandler` 本身并不知道应该重置哪些图像，而想要让它知道就要传递更多的参数，这样就不够灵活了。而这里设置一个变量给外面的函数或者类判断是否需要重置，就可以在这个类外面完成重置的事情。所谓的外面，其实就是指的用户编写的在线程序。
+第 11-16 行，将 ROOT 自身的处理键盘和鼠标输入的函数 `ProcessedEvent`和 `SignalHandler::Refresh` 函数关联起来，也就是说每次用户点击鼠标或者敲键盘时，都会调用 `Refresh` 函数并给一些输入信息。`Refresh` 函数在发现输入信息是 **F5** 或者 **r** 时就会设置 `should_refresh_` 为真，这里不直接重置图像是因为 `SignalHandler` 本身并不知道应该重置哪些图像，而想要让它知道就要传递更多的参数，这样就不够灵活了。而这里设置一个变量给外面的函数或者类判断是否需要重置，就可以在这个类外面完成重置的事情。所谓的外面，其实就是指的用户编写的在线程序。同理，在检测到 **F12** 或者 **s** 时就会设置 `should_save_` 为真，告诉外面的程序是时候截图保存了。
 
 ```cpp
-void Refresh(int event, int x, int y, TObject*) {
-    if (event == 24 && x == 0 && y == 4148) {
+void Refresh(
+    int event,
+    int x,
+    int y,
+    TObject*
+) {
+    if (
+        (event == 24 && x == 0 && y == 4148)
+        || (event == 24 && x == 114 && y == 114)
+    ) {
+        // F5 and r
         should_refresh_ = true;
-    } else if (event == 24 && x == 114 && y == 114) {
-        should_refresh_ = true;
+    } else if (
+        (event == 24 && x == 0 && y == 4155)
+        || (event == 24 && x == 115 && y == 115)
+    ) {
+        // F12 and s
+        should_save_ = true;
     }
 }
 ```
@@ -187,7 +204,8 @@ std::thread update_gui_thread(
 void UpdateGui(
 	TCanvas *canvas,
 	SignalHandler *handler,
-	const std::vector<TH1*> &histograms
+	const std::vector<TH1*> &histograms,
+	const std::string &screenshot_name
 ) {
 	while (!iox::posix::hasTerminationRequested()) {
 		for (int i = 1; i <= graph_num; ++i) {
@@ -200,21 +218,33 @@ void UpdateGui(
 				histograms[i]->Reset();
 			}
 		}
+		if (handler->ShouldSave()) {
+			canvas->Print((
+				screenshot_path + screenshot_name + GetTime() + ".png"
+			).c_str());
+		}
 		gSystem->ProcessEvents();
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000/fresh_rate));
 	}
+	canvas->Print((
+		screenshot_path + screenshot_name + GetTime() + ".png"
+	).c_str());
 }
 ```
 
 这个函数主体是一个循环，终止条件是用户按下 Ctrl+C。前面提到了用户点击关闭按钮时，会触发`SignalHandler::Terminate`函数并调用 `raise(SIGINT)` 函数，这同样会产生一个中断信号，和按下 Ctrl+C 是一样。换句话说，这个循环的终止条件是用户按下 Ctrl+C 或者点击窗口右上角的关闭按钮。
 
-循环中的 7-11 行是遍历画布中的所有 pad，并更新图像，常规的 ROOT 代码。
+循环中的 8-12 行是遍历画布中的所有 pad，并更新图像，常规的 ROOT 代码。
 
-第 12-16 行是问一下 `SignalHandler` 有没有收到重置图像的指令，有的话就重置所有的图像。因为需要知道要重置哪些图像，所以需要传入参数`const std::vector<TH1*> &histograms`，这里需要传入所有的需要重置的图像的指针。所以可以在 `main()`函数代码中的 31-33 行看到需要构建一个直方图的数组。
+第 13-17 行是问一下 `SignalHandler` 有没有收到重置图像的指令，有的话就重置所有的图像。因为需要知道要重置哪些图像，所以需要传入参数`const std::vector<TH1*> &histograms`，这里需要传入所有的需要重置的图像的指针。所以可以在 `main()`函数代码中的 27-29 行看到需要构建一个直方图的数组。
 
-第 17 行是 ROOT 周期性的刷新，可以简单理解成刷新窗口。
+第 18-22 行时保存截图，保存的截图的路径是在一开始的参数中设置的，而每个文件会按照机箱编号-run-时间的形式来组织。所以一方面需要 `screenshot_name` 来输入包含机箱和 run 信息的字符串，另一方面需要用 `GetTime()` 函数来获取当前时间并转化为字符串。
 
-第 18 行是休眠，根据设置的刷新率休眠一定时间。注意到这里以 us 为单位，所以刷新率不能高于 1000 Hz，当然，实际使用时，10 Hz 以下的刷新率就绰绰有余了。
+第 23 行是 ROOT 周期性的刷新，可以简单理解成刷新窗口。
+
+第 24 行是休眠，根据设置的刷新率休眠一定时间。注意到这里以 us 为单位，所以刷新率不能高于 1000 Hz，当然，实际使用时，10 Hz 以下的刷新率就绰绰有余了。
+
+第 26-28 是在结束这个函数之前，再保存一次截图。结束这个函数也意味着整个程序的结束，换句话说就是在程序关闭前，迅速保存一次截图，再关闭程序。
 
 ## 读取内存并处理数据
 
@@ -229,6 +259,14 @@ update_gui_thread.join();
 ```
 
 来等待线程结束并回收。
+
+另一方面还需要结束之前创建的 `TApplication`，所以调用
+
+```cpp
+gApplication->Terminate();
+```
+
+来终止 ROOT 的程序。
 
 顺便一提，如果程序中有用到 `new` 或者 `malloc` 来申请内存，也应该在这一部分释放内存。
 
