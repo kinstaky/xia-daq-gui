@@ -77,7 +77,7 @@ OnlineDataReceiver::OnlineDataReceiver(
 		packet_[i] = nullptr;
 	}
 
-	has_taken_ = false;
+	has_taken_.clear();
 
 	for (size_t i = 0; i < module_num_; ++i) {
 		first_events_[i].used = true;
@@ -91,7 +91,9 @@ OnlineDataReceiver::OnlineDataReceiver(
 		group_info_[i].expect_id = 0;
 	}
 	for (size_t i = 0; i < module_num_; ++i) {
-		if (group_index_[i] >= 0) ++group_info_[group_index_[i]].size;
+		if (group_index_[i] < 0) continue;
+		++group_info_[group_index_[i]].size;
+		valid_group_index_.insert(group_index_[i]);
 	}
 }
 
@@ -99,12 +101,12 @@ OnlineDataReceiver::OnlineDataReceiver(
 std::vector<DecodeEvent>* OnlineDataReceiver::ReceiveEvent(
 	const int64_t window
 ) {
-	if (!has_taken_) {
-		for (size_t i = 0; i < module_num_; ++i) {
-			if (user_payload_[i]) continue;
+	if (has_taken_.empty()) {
+		for (size_t module = 0; module < module_num_; ++module) {
+			if (user_payload_[module]) continue;
 			// take
 			enum iox_ChunkReceiveResult take_result = iox_sub_take_chunk(
-				subscriber_[i], user_payload_+i
+				subscriber_[module], user_payload_+module
 			);
 			// no available chunk, continue
 			if (take_result == ChunkReceiveResult_NO_CHUNK_AVAILABLE) continue;
@@ -115,54 +117,59 @@ std::vector<DecodeEvent>* OnlineDataReceiver::ReceiveEvent(
 					<< take_result << "\n";
 				continue;
 			}
-
 			// get header
-			header_[i] = (const PacketHeader*)(
+			header_[module] = (const PacketHeader*)(
 				iox_chunk_header_to_user_header_const(
-					iox_chunk_header_from_user_payload_const(user_payload_[i])
+					iox_chunk_header_from_user_payload_const(
+						user_payload_[module]
+					)
 				)
 			);
 			// check packet id
-			uint64_t &expected_id = group_info_[group_index_[i]].expect_id;
-			if (header_[i]->id > expected_id) {
+			uint64_t &expected_id =
+				group_info_[group_index_[module]].expect_id;
+			if (header_[module]->id > expected_id) {
 				// packet id larger than expected, expected id is out dated
 				// update expected id and reset valid packet number to 1
-				expected_id = header_[i]->id;
-				group_info_[group_index_[i]].valid_packets = 1;
+				expected_id = header_[module]->id;
+				group_info_[group_index_[module]].valid_packets = 1;
 				// release out dated packet
-				for (size_t j = 0; j < i; ++j) {
+				for (size_t i = 0; i < module; ++i) {
 					// ignore other group
-					if (group_index_[j] != group_index_[i]) continue;
+					if (group_index_[i] != group_index_[module]) continue;
 					// ignore empty chunk
-					if (!user_payload_[j]) continue;
+					if (!user_payload_[i]) continue;
 					// ignore valid packet
-					if (header_[j]->id >= expected_id) continue;
+					if (header_[i]->id >= expected_id) continue;
 					// release out dated packet
-					iox_sub_release_chunk(subscriber_[j], user_payload_[j]);
-					user_payload_[j] = nullptr;
-					header_[j] = nullptr;
-					packet_[j] = nullptr;
+					iox_sub_release_chunk(subscriber_[i], user_payload_[i]);
+					user_payload_[i] = nullptr;
+					header_[i] = nullptr;
+					packet_[i] = nullptr;
 				}
-			} else if (header_[i]->id < expected_id) {
+			} else if (header_[module]->id < expected_id) {
 				// packet id smaller than expected, packet is out dated, release it
-				iox_sub_release_chunk(subscriber_[i], user_payload_[i]);
-				user_payload_[i] = nullptr;
-				header_[i] = nullptr;
-				packet_[i] = nullptr;
+				iox_sub_release_chunk(subscriber_[module], user_payload_[module]);
+				user_payload_[module] = nullptr;
+				header_[module] = nullptr;
+				packet_[module] = nullptr;
 				continue;
 			} else {
 				// packet id is equal to expected id
-				++group_info_[group_index_[i]].valid_packets;
+				++group_info_[group_index_[module]].valid_packets;
 			}
-			packet_[i] = (const DaqPacket*)user_payload_[i];
-			first_events_[i].used = true;
-			decode_offset_[i] = 0;
+			packet_[module] = (const DaqPacket*)user_payload_[module];
+			first_events_[module].used = true;
+			decode_offset_[module] = 0;
 		}
-	}
 
-	// not get enough packet
-	if (group_info_[0].valid_packets != group_info_[0].size) {
-		return nullptr;
+		// check all groups, record taken group
+		for (size_t g : valid_group_index_) {
+			if (group_info_[g].valid_packets == group_info_[g].size) {
+				has_taken_.push_back(int(g));
+			}
+		}
+		if (has_taken_.empty()) return nullptr;
 	}
 
 // if (!has_taken_) {
@@ -177,9 +184,6 @@ std::vector<DecodeEvent>* OnlineDataReceiver::ReceiveEvent(
 // 	}
 // }
 
-	has_taken_ = true;
-
-
 	// timestamps of first events
 	int64_t ref_timestamp;
 	// initialize
@@ -190,6 +194,7 @@ std::vector<DecodeEvent>* OnlineDataReceiver::ReceiveEvent(
 		finish = true;
 		// get first events
 		for (size_t i = 0; i < module_num_; ++i) {
+			if (group_index_[i] != has_taken_.back()) continue;
 			if (
 				first_events_[i].used
 				&& decode_offset_[i]+sizeof(DataHeader)/4 < header_[i]->length
@@ -206,6 +211,7 @@ std::vector<DecodeEvent>* OnlineDataReceiver::ReceiveEvent(
 		// check data
 		bool has_data = false;
 		for (size_t i = 0; i < module_num_; ++i) {
+			if (group_index_[i] != has_taken_.back()) continue;
 			if (
 				decode_offset_[i]+sizeof(DataHeader)/4 < header_[i]->length
 				|| !first_events_[i].used
@@ -214,16 +220,17 @@ std::vector<DecodeEvent>* OnlineDataReceiver::ReceiveEvent(
 			}
 		}
 		if (!has_data) {
-			has_taken_ = false;
 			// clean
 			for (size_t i = 0; i < module_num_; ++i) {
+				if (group_index_[i] != has_taken_.back()) continue;
 				iox_sub_release_chunk(subscriber_[i], user_payload_[i]);
 				user_payload_[i] = nullptr;
 				header_[i] = nullptr;
 				packet_[i] = nullptr;
 			}
-			group_info_[0].valid_packets = 0;
-			++group_info_[0].expect_id;
+			group_info_[has_taken_.back()].valid_packets = 0;
+			++group_info_[has_taken_.back()].expect_id;
+			has_taken_.pop_back();
 			return nullptr;
 		}
 
@@ -234,6 +241,7 @@ std::vector<DecodeEvent>* OnlineDataReceiver::ReceiveEvent(
 			// module with minimum timestamp
 			size_t min_ts_index = 16;
 			for (size_t i = 0; i < module_num_; ++i) {
+				if (group_index_[i] != has_taken_.back()) continue;
 				if (first_events_[i].used) continue;
 				if (first_events_[i].timestamp < min_ts) {
 					min_ts = first_events_[i].timestamp;
@@ -252,6 +260,7 @@ std::vector<DecodeEvent>* OnlineDataReceiver::ReceiveEvent(
 
 		} else {
 			for (size_t i = 0; i < module_num_; ++i) {
+				if (group_index_[i] != has_taken_.back()) continue;
 				if (first_events_[i].used) continue;
 				if (
 					first_events_[i].timestamp - ref_timestamp > -window

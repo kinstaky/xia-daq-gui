@@ -2,6 +2,7 @@
 #define __ONLINE_DATA_RECEIVER_H__
 
 #include <vector>
+#include <set>
 
 #include <iceoryx_posh/runtime/posh_runtime.hpp>
 #include <iceoryx_hoofs/posix_wrapper/signal_watcher.hpp>
@@ -30,10 +31,6 @@ public:
 	OnlineDataReceiver(
 		const char *app_name,
 		const char *service_name
-		// int run,
-		// int crate,
-		// const std::vector<int> &module_sampling_rate,
-		// const std::vector<int> &group_index
 	);
 
 	std::vector<DecodeEvent>* ReceiveEvent(
@@ -67,10 +64,12 @@ private:
 	// actual packet data
 	const DaqPacket *packet_[16];
 	// has taken chunks
-	bool has_taken_;
+	std::vector<int> has_taken_;
 
 	// group index of each module
 	std::vector<int> group_index_;
+	// valid group index
+	std::set<int> valid_group_index_;
 	// group policy information
 	GroupPolicyInfo group_info_[16];
 
