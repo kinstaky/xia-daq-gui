@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.10)
 # Set project properties.
 project(
 	XiaDaqGui
-	VERSION 1.0.0
+	VERSION 1.0.1
 	DESCRIPTION "A project for XIA DAQ GUI, edited from GDDAQ."
 	LANGUAGES CXX C
 )

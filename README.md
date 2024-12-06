@@ -66,10 +66,10 @@ If you encounter issues during the compilation process, refer to the documentati
 
 ### Download the Project
 
-Clone the repository from GitHub:
+Clone the repository in version v1.0.1 from GitHub:
 
 ```bash
-git clone https://github.com/kinstaky/xia-daq-gui-online.git .
+git clone --branch v1.0.1 --single-branch https://github.com/kinstaky/xia-daq-gui-online.git
 ```
 
 ### Build
