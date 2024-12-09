@@ -405,11 +405,11 @@
         <li class="md-nav__item">
   <a href="#_9" class="md-nav__link">
     <span class="md-ellipsis">
-      可调整参数
+      修改参数
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="可调整参数">
+    <nav class="md-nav" aria-label="修改参数">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -449,13 +449,22 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      固件位置
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#_13" class="md-nav__link">
+  <a href="#_14" class="md-nav__link">
     <span class="md-ellipsis">
       共享内存大小
     </span>
@@ -469,7 +478,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_14" class="md-nav__link">
+  <a href="#_15" class="md-nav__link">
     <span class="md-ellipsis">
       更多
     </span>
@@ -805,11 +814,11 @@
         <li class="md-nav__item">
   <a href="#_9" class="md-nav__link">
     <span class="md-ellipsis">
-      可调整参数
+      修改参数
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="可调整参数">
+    <nav class="md-nav" aria-label="修改参数">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -849,13 +858,22 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      固件位置
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#_13" class="md-nav__link">
+  <a href="#_14" class="md-nav__link">
     <span class="md-ellipsis">
       共享内存大小
     </span>
@@ -869,7 +887,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_14" class="md-nav__link">
+  <a href="#_15" class="md-nav__link">
     <span class="md-ellipsis">
       更多
     </span>
@@ -901,7 +919,7 @@
 <ol>
 <li>目标是什么，或者说在线程序要达成什么效果</li>
 <li>怎么在框架中写在线程序，需要写点什么</li>
-<li>该框架中有哪些可以调整的参数</li>
+<li>该框架中有哪些需要修改的参数</li>
 </ol>
 <p>要达成什么效果？简单来说，就是要在打开程序后，弹出一个窗口，窗口内有各种持续更新的直方图，数据来源是正在运行的获取。至于怎么写程序和框架中的参数，后续将详细描述。</p>
 <h2 id="_3">怎么写程序</h2>
@@ -1035,7 +1053,7 @@
 <li>修改 <code>time_window</code>，适配符合窗</li>
 <li>修改两个<code>CMakeLists.txt</code></li>
 </ol>
-<h2 id="_9">可调整参数</h2>
+<h2 id="_9">修改参数</h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>必须注意这部分的内容，获取程序的组编号、对齐、共享内存大小和符合窗的宽度是<strong>必须</strong>根据实验情况调整的内容，会直接影响在线程序的正常运行。</p>
@@ -1067,7 +1085,17 @@
 <p>在同一个 run 中，同一个通道的事件长度保持不变，但是不同通道有可能因为配置不同而事件长度不一样。在计算机读取模块的数据时，是从一个模块中读取所有通道的二进制数据，只有在解码后才能知道每个事件有多长。然而一边获取一边解码有可能影响获取的性能，话句话说，获取的时候是不知道买个事件有多长的。所以这些二进制数据表面上是顺序结构，实际上是链表结构，需要一个一个顺序读取。所以除非从头开始读取，否则是难以知道每个事件的边界。</p>
 <p><strong>所以如果在共享内存的时候，一旦中间有事件丢失，就会导致后面的事件都无法读取。</strong>为了避免这个问题，可以让同一个模块的事件保持一个固定的长度，从链表结构变成顺序结构。这样就可以准确知道每个事件的边界。</p>
 <p>所以，<strong>对于可能改变时间长度的配置（上面列出的），同一个模块中的所有通道必须保持一致，也就是说要求同一个模块的所有通道的事件长度一致</strong>。这样的要求虽然看似苛刻，但是实际情况是同一个模块大概率接入的时同一类型的探测器，使用相同的配置是可行的。设置好每一个模块后，计算出每个模块的事件的长度，以字（4个字节）为单位，填入配置文件<code>ModuleAlignment</code> 中。比如说，如果什么都没选，那么事件的长度就是默认的 4 字 16 字节，那么就填入数字 4。</p>
-<h3 id="_13">共享内存大小</h3>
+<h4 id="_13">固件位置</h4>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>这部分非常重要，虽然和在线没有直接关系，但是直接关系到获取程序能否运行！！！</p>
+</div>
+<p>本项目没有附带任何的 pixie-16 的固件，因此需要从另外下载固件并修改 cfgPixie16.txt 中的固件路径（建议使用绝对路径）。</p>
+<ul>
+<li>从 <a href="https://github.com/wuhongyi/PKUXIADAQ/tree/master/firmware">PKUXIADAQ</a> 中下载固件，如果已经安装 PKUXIADAQ 则忽略这一步</li>
+<li>修该 cfgPixie16.txt 中的固件路径</li>
+</ul>
+<h3 id="_14">共享内存大小</h3>
 <p>在 <code>include/daq_packet.h</code> 中可以看到一下语句。</p>
 <div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
 <span class="normal"><a href="#__codelineno-7-2">2</a></span>
@@ -1078,7 +1106,7 @@
 <p>这就是用来调整共享内存的大小的参数。这里的大小，指的是单个模块一次共享的数据的大小。实际使用获取程序时，当且仅当一组内任意一个模块缓存的数据量接近 <code>PACKET_SIZE</code> 时，整一组模块的数据才会共享到内存中。简单来说，模块的计数率越高、<code>PACKET_SIZE</code> 越小，共享的频率就越高，反之则越低。</p>
 <p>共享频率越高，那么在线程序读取数据就越频繁，好处是能够更及时先是数据，坏处是占用的 CPU 和内存资源更多，共享频率特别高时有堵塞获取的风险。与之相对，共享频率太低就不能及时展现实验条件的变化。</p>
 <p>所以需要合理估算模块的数据量，已确定共享频率和共享内存大小。单个通道，在不记录波型的情况下，一个事件一般占用 16 字节。在记录波型时，波型一个采样点占用 2 个字节。可以根据这些数据估算需要的共享内存大小。</p>
-<h2 id="_14">更多</h2>
+<h2 id="_15">更多</h2>
 <ul>
 <li>如果想要了解模板中其他部分的含义，参考<a href="../template_walk_through/">模板详解</a></li>
 <li>如果想要参考可运行的代码，或者数据分析和在线结合的例子，请看源代码中的 <code>examples</code> 目录和<a href="../example_details/">示例详解</a></li>
