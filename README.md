@@ -2,6 +2,8 @@
 
 This project is a customized version of [PKUXIADAQ](https://github.com/wuhongyi/PKUXIADAQ). It retains the original UI interface and corresponding functionality while adding online features. The online functionality relies on the shared memory mechanism provided by [iceoryx](https://iceoryx.io/latest/), allowing the program to read data from memory in real time and plot it. Given the diversity of experimental setups, this project cannot cover all scenarios, so it only provides a framework for online analysis. Users are responsible for implementing their own data analysis and plotting processes.
 
+Full documentation is available on https://kinstaky.github.io/xia-daq-gui-online/latest/
+
 ## Download and Installation
 
 ### Dependencies
