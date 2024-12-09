@@ -1,5 +1,9 @@
 # Changelog
 
+# v1.0.2
+### Bug Fix
++ memory overflow in PKUXIADAQ offline
+
 ## v1.0.1
 ### New Features
 + Press F12 or s for screenshot

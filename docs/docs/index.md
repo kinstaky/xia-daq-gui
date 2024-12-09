@@ -85,7 +85,7 @@ popd
 从 github 下载 v1.0.1 版本
 
 ```bash
-git clone --branch v1.0.1 --single-branch https://github.com/kinstaky/xia-daq-gui-online.git .
+git clone https://github.com/kinstaky/xia-daq-gui-online.git .
 ```
 
 ### 编译

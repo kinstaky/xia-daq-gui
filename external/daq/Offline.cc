@@ -534,8 +534,8 @@ void Offline::MakeFold0Panel(TGCompositeFrame *TabPanel)
   informationgroup->SetBackgroundColor(TColor::RGB2Pixel(FRAME_BG_R,FRAME_BG_G,FRAME_BG_B));
   informationgroup->SetTextColor(TColor::RGB2Pixel(TITLE_TEXT_R,TITLE_TEXT_G,TITLE_TEXT_B));
   
-  TGHorizontalFrame *guideframe[10];
-  TGTextEntry *guidetextinfor[10];
+  TGHorizontalFrame *guideframe[PANELNUMBER];
+  TGTextEntry *guidetextinfor[PANELNUMBER];
   
   for (int i = 0; i < PANELNUMBER; ++i)
     {
