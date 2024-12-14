@@ -18,8 +18,8 @@ theme:
 
 extra:
   version:
-    - provider: mike
-    - default: latest
+    provider: mike
+    default: latest
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -34,6 +34,7 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.magiclink
   - github-callouts
 
 extra_javascript:
