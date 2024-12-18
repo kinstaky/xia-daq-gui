@@ -2,5 +2,12 @@ build
 .vscode
 *.xpm
 
+# config
+parset/*.set
+!parset/DSPpar.set
+
+# log file
+Pixie16msg.txt
+
 # document site
 docs/site
