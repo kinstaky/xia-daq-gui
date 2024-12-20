@@ -199,10 +199,11 @@ XIA 输出的每个事件的长度不是固定的，取决于获取中设置的�
 >
 > 这部分非常重要，虽然和在线没有直接关系，但是直接关系到获取程序能否运行！！！
 
-本项目没有附带任何的 pixie-16 的固件，因此需要从另外下载固件并修改 cfgPixie16.txt 中的固件路径（建议使用绝对路径）。
+本项目中 `cfgPixie16.txt` 中的固件位置是一个临时值，还需要按照实际路径修改（建议使用绝对路径），也可以使用运行脚本自动修改。
 
-+ 从 [PKUXIADAQ](https://github.com/wuhongyi/PKUXIADAQ/tree/master/firmware) 中下载固件，如果已经安装 PKUXIADAQ 则忽略这一步
-+ 修该 cfgPixie16.txt 中的固件路径
+```bash
+bash find_firmware.sh
+```
 
 ### 共享内存大小
 

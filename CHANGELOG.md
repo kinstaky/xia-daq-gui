@@ -1,5 +1,9 @@
 # Changelog
 
+# v.1.0.3
+### Bug Fix
++ add firmware and chnage firmware path
+
 # v1.0.2
 ### Bug Fix
 + memory overflow in PKUXIADAQ offline
