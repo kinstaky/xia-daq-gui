@@ -1090,18 +1090,16 @@
 <p class="admonition-title">Warning</p>
 <p>这部分非常重要，虽然和在线没有直接关系，但是直接关系到获取程序能否运行！！！</p>
 </div>
-<p>本项目没有附带任何的 pixie-16 的固件，因此需要从另外下载固件并修改 cfgPixie16.txt 中的固件路径（建议使用绝对路径）。</p>
-<ul>
-<li>从 <a href="https://github.com/wuhongyi/PKUXIADAQ/tree/master/firmware">PKUXIADAQ</a> 中下载固件，如果已经安装 PKUXIADAQ 则忽略这一步</li>
-<li>修该 cfgPixie16.txt 中的固件路径</li>
-</ul>
+<p>本项目中 <code>cfgPixie16.txt</code> 中的固件位置是一个临时值，还需要按照实际路径修改（建议使用绝对路径），也可以使用运行脚本自动修改。</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a>bash<span class="w"> </span>find_firmware.sh
+</code></pre></div></td></tr></table></div>
 <h3 id="_14">共享内存大小</h3>
 <p>在 <code>include/daq_packet.h</code> 中可以看到一下语句。</p>
-<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
-<span class="normal"><a href="#__codelineno-7-2">2</a></span>
-<span class="normal"><a href="#__codelineno-7-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1">// constexpr size_t PACKET_SIZE = 32768; // 128kB</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="c1">// constexpr size_t PACKET_SIZE = 4096; // 16kB</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="k">constexpr</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">PACKET_SIZE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span><span class="w"> </span><span class="c1">// 4kB</span>
+<div class="language-cpp highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
+<span class="normal"><a href="#__codelineno-8-2">2</a></span>
+<span class="normal"><a href="#__codelineno-8-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1">// constexpr size_t PACKET_SIZE = 32768; // 128kB</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="c1">// constexpr size_t PACKET_SIZE = 4096; // 16kB</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="k">constexpr</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">PACKET_SIZE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span><span class="w"> </span><span class="c1">// 4kB</span>
 </code></pre></div></td></tr></table></div>
 <p>这就是用来调整共享内存的大小的参数。这里的大小，指的是单个模块一次共享的数据的大小。实际使用获取程序时，当且仅当一组内任意一个模块缓存的数据量接近 <code>PACKET_SIZE</code> 时，整一组模块的数据才会共享到内存中。简单来说，模块的计数率越高、<code>PACKET_SIZE</code> 越小，共享的频率就越高，反之则越低。</p>
 <p>共享频率越高，那么在线程序读取数据就越频繁，好处是能够更及时先是数据，坏处是占用的 CPU 和内存资源更多，共享频率特别高时有堵塞获取的风险。与之相对，共享频率太低就不能及时展现实验条件的变化。</p>
